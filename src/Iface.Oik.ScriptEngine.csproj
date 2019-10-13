@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>netcoreapp3.0</TargetFramework>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Include="..\lib\libif_cfs.so" CopyToOutputDirectory="PreserveNewest" />
+        <None Include="..\lib\libif_cfs.dll" CopyToOutputDirectory="PreserveNewest" />
+        <None Include="..\scripts\ПС Демо.js" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+    <ItemGroup>
+      <Reference Include="Iface.Oik.Tm">
+        <HintPath>..\lib\Iface.Oik.Tm.dll</HintPath>
+      </Reference>
+      <Reference Include="Iface.Oik.Tm.Native">
+        <HintPath>..\lib\Iface.Oik.Tm.Native.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="Dapper" Version="1.60.6" />
+      <PackageReference Include="Jint" Version="2.11.58" />
+      <PackageReference Include="Mapster" Version="4.1.0" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.0.0" />
+      <PackageReference Include="Npgsql" Version="3.2.6" />
+      <PackageReference Include="System.Text.Encoding.CodePages" Version="4.6.0" />
+    </ItemGroup>
+
+</Project>
