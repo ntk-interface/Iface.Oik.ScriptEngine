@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using Iface.Oik.ScriptEngine.Engines;
 using Iface.Oik.Tm.Native.Api;
@@ -18,6 +19,10 @@ namespace Iface.Oik.ScriptEngine
   {
     private IServiceProvider _serviceProvider;
     private bool             _servicesStarted;
+
+    private static readonly string ScriptsPath = Path.Combine(
+      Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+      "scripts");
 
     private readonly string _host;
     private readonly string _tmServer;
@@ -42,8 +47,6 @@ namespace Iface.Oik.ScriptEngine
 
     public IServiceProvider ConfigureServices(IServiceCollection services)
     {
-      Tms.PrintMessage("START NOW");
-      
       services.AddSingleton<ITmNative, TmNative>();
       services.AddSingleton<ITmsApi, TmsApi>();
       services.AddSingleton<IOikSqlApi, OikSqlApi>();
@@ -55,11 +58,6 @@ namespace Iface.Oik.ScriptEngine
 
       ConfigureEngines(services);
 
-      if (_engines.Count == 0)
-      {
-        throw new Exception("Не найдено ни одного скрипта в каталоге \"scripts/\"");
-      }
-
       _serviceProvider = services.BuildServiceProvider();
 
       return _serviceProvider;
@@ -68,10 +66,12 @@ namespace Iface.Oik.ScriptEngine
 
     private void ConfigureEngines(IServiceCollection services)
     {
-      foreach (var file in Directory.GetFiles("./scripts", "*"))
+      if (!Directory.Exists(ScriptsPath)) return;
+
+      foreach (var file in Directory.GetFiles(ScriptsPath, "*"))
       {
-        var          name   = Path.GetFileName(file);
-        var          script = File.ReadAllText(file);
+        var name   = Path.GetFileName(file);
+        var script = File.ReadAllText(file);
         ScriptEngine engine;
         switch (Path.GetExtension(file))
         {
@@ -108,6 +108,11 @@ namespace Iface.Oik.ScriptEngine
 
       Tms.PrintMessage($"Соединение с сервером {_host}/{_tmServer} установлено");
 
+      if (_engines.Count == 0)
+      {
+        throw new Exception($"Не найдено ни одного скрипта в каталоге \"{ScriptsPath}\"");
+      }
+
       _serviceProvider.GetService<ICommonInfrastructure>()
                       .InitializeTmWithoutSql(tmCid, userInfo);
 
@@ -117,7 +122,7 @@ namespace Iface.Oik.ScriptEngine
 
       _servicesStarted = true;
       StopEventHandle  = stopEventHandle;
-      
+
       Tms.PrintMessage($"Задача запущена, всего скриптов для расчета: {_engines.Count}");
     }
 

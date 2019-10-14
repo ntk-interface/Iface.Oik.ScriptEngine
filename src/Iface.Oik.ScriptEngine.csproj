@@ -6,7 +6,7 @@
     <ItemGroup>
         <None Include="..\lib\libif_cfs.so" CopyToOutputDirectory="PreserveNewest" />
         <None Include="..\lib\libif_cfs.dll" CopyToOutputDirectory="PreserveNewest" />
-        <None Include="..\scripts\*.js" LinkBase="scripts\" CopyToOutputDirectory="Always" />
+        <None Include="..\scripts\*.js" LinkBase="scripts\" />
     </ItemGroup>
     <ItemGroup>
       <Reference Include="Iface.Oik.Tm">
