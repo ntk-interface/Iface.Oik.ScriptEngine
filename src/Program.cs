@@ -8,11 +8,12 @@ namespace Iface.Oik.ScriptEngine
   {
     static void Main(string[] args)
     {
+      Tms.PrintMessage("START NOW!!");
       using (var startup = new Startup(args))
       {
-        startup.ConfigureServices(new ServiceCollection());
         try
         {
+          startup.ConfigureServices(new ServiceCollection());
           startup.StartServices();
         }
         catch (Exception ex)

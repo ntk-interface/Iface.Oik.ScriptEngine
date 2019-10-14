@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>netcoreapp3.0</TargetFramework>
@@ -7,7 +6,7 @@
     <ItemGroup>
         <None Include="..\lib\libif_cfs.so" CopyToOutputDirectory="PreserveNewest" />
         <None Include="..\lib\libif_cfs.dll" CopyToOutputDirectory="PreserveNewest" />
-        <None Include="..\scripts\ПС Демо.js" CopyToOutputDirectory="PreserveNewest" />
+        <None Include="..\scripts\*.js" LinkBase="scripts\" CopyToOutputDirectory="Always" />
     </ItemGroup>
     <ItemGroup>
       <Reference Include="Iface.Oik.Tm">
@@ -25,5 +24,4 @@
       <PackageReference Include="Npgsql" Version="3.2.6" />
       <PackageReference Include="System.Text.Encoding.CodePages" Version="4.6.0" />
     </ItemGroup>
-
 </Project>
