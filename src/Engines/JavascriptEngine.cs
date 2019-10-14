@@ -1,7 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Iface.Oik.Tm.Helpers;
-using Iface.Oik.Tm.Interfaces;
 using Jint;
 
 namespace Iface.Oik.ScriptEngine.Engines

@@ -78,6 +78,10 @@ namespace Iface.Oik.ScriptEngine
           case ".js":
             engine = new JavascriptEngine(name, script);
             break;
+          
+          case ".py":
+            engine = new PythonEngine(name, script);
+            break;
 
           default:
             continue;

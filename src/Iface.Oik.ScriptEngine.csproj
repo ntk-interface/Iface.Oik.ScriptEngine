@@ -7,7 +7,7 @@
         <None Include="..\lib\libif_cfs.so" CopyToOutputDirectory="PreserveNewest" />
         <None Include="..\lib\libif_cfs.dll" CopyToOutputDirectory="PreserveNewest" />
         <None Include="..\readme.txt" CopyToOutputDirectory="PreserveNewest" />
-        <None Include="..\scripts\*.js" LinkBase="scripts\" />
+        <None Include="..\scripts\*" LinkBase="scripts\" />
     </ItemGroup>
     <ItemGroup>
       <Reference Include="Iface.Oik.Tm">
@@ -19,6 +19,8 @@
     </ItemGroup>
     <ItemGroup>
       <PackageReference Include="Dapper" Version="1.60.6" />
+      <PackageReference Include="IronPython" Version="2.7.9" />
+      <PackageReference Include="IronPython.StdLib" Version="2.7.9" />
       <PackageReference Include="Jint" Version="2.11.58" />
       <PackageReference Include="Mapster" Version="4.1.0" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.0.0" />
