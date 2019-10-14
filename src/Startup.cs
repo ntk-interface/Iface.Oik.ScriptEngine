@@ -29,7 +29,7 @@ namespace Iface.Oik.ScriptEngine
     private readonly string _user;
     private readonly string _password;
 
-    private List<ScriptEngine> _engines = new List<ScriptEngine>();
+    private readonly List<ScriptEngine> _engines = new List<ScriptEngine>();
 
     public uint StopEventHandle { get; private set; }
 
@@ -70,8 +70,8 @@ namespace Iface.Oik.ScriptEngine
 
       foreach (var file in Directory.GetFiles(ScriptsPath, "*"))
       {
-        var name   = Path.GetFileName(file);
-        var script = File.ReadAllText(file);
+        var          name   = Path.GetFileName(file);
+        var          script = File.ReadAllText(file);
         ScriptEngine engine;
         switch (Path.GetExtension(file))
         {
@@ -116,9 +116,9 @@ namespace Iface.Oik.ScriptEngine
       _serviceProvider.GetService<ICommonInfrastructure>()
                       .InitializeTmWithoutSql(tmCid, userInfo);
 
-      _engines.ForEach(e => e.InitApi(_serviceProvider.GetService<IOikDataApi>()));
+      _engines.ForEach(engine => engine.InitApi(_serviceProvider.GetService<IOikDataApi>()));
       _serviceProvider.GetServices<IBackgroundService>()
-                      .ForEach(s => s.StartAsync());
+                      .ForEach(service => service.StartAsync().Wait());
 
       _servicesStarted = true;
       StopEventHandle  = stopEventHandle;
@@ -135,7 +135,7 @@ namespace Iface.Oik.ScriptEngine
       }
 
       _serviceProvider.GetServices<IBackgroundService>()
-                      .ForEach(s => s.StopAsync().Wait());
+                      .ForEach(service => service.StopAsync().Wait());
 
       var infr = _serviceProvider.GetService<ICommonInfrastructure>();
 
