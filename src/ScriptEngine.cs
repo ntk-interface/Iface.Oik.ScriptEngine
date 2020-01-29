@@ -79,14 +79,14 @@ namespace Iface.Oik.ScriptEngine
     protected void SetTmStatus(int ch, int rtu, int point, int status)
     {
       _api.SetStatus(ch, rtu, point, status).Wait();
-//      Tms.PrintDebug($"#TC{ch}:{rtu}:{point} <- {status}");
+      // Tms.PrintDebug($"#TC{ch}:{rtu}:{point} <- {status}");
     }
 
 
     protected void SetTmAnalog(int ch, int rtu, int point, float value)
     {
       _api.SetAnalog(ch, rtu, point, value).Wait();
-      Tms.PrintDebug($"#TT{ch}:{rtu}:{point} <- {value}");
+      // Tms.PrintDebug($"#TT{ch}:{rtu}:{point} <- {value}");
     }
   }
 }
