@@ -33,7 +33,7 @@ namespace Iface.Oik.ScriptEngine
         try
         {
           var sw = Stopwatch.StartNew();
-          await ExecuteScript();
+          ExecuteScript();
           Tms.PrintDebug($"Скрипт \"{_name}\" рассчитан за {sw.ElapsedMilliseconds} мс");
         }
         catch (Exception ex)
@@ -52,7 +52,7 @@ namespace Iface.Oik.ScriptEngine
 
 
     public abstract void InitEngine();
-    public abstract Task ExecuteScript();
+    public abstract void ExecuteScript();
 
 
     protected void OverrideScriptTimeout(int timeout)
@@ -86,7 +86,7 @@ namespace Iface.Oik.ScriptEngine
     protected void SetTmAnalog(int ch, int rtu, int point, float value)
     {
       _api.SetAnalog(ch, rtu, point, value).Wait();
-//      Tms.PrintDebug($"#TT{ch}:{rtu}:{point} <- {value}");
+      Tms.PrintDebug($"#TT{ch}:{rtu}:{point} <- {value}");
     }
   }
 }

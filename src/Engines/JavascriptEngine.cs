@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using Jint;
 
 namespace Iface.Oik.ScriptEngine.Engines
@@ -26,7 +25,7 @@ namespace Iface.Oik.ScriptEngine.Engines
     }
 
 
-    public override async Task ExecuteScript()
+    public override void ExecuteScript()
     {
       _engine.Execute(_script);
     }

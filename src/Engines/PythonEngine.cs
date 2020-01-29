@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using IronPython.Hosting;
 
 namespace Iface.Oik.ScriptEngine.Engines
@@ -8,6 +7,7 @@ namespace Iface.Oik.ScriptEngine.Engines
   {
     private Microsoft.Scripting.Hosting.ScriptEngine _engine;
     private Microsoft.Scripting.Hosting.ScriptScope  _engineScope;
+    private Microsoft.Scripting.Hosting.CompiledCode _engineCompiledCode;
 
 
     public PythonEngine(string name, string script)
@@ -25,12 +25,15 @@ namespace Iface.Oik.ScriptEngine.Engines
       _engineScope.SetVariable("GetTmAnalog",           new Func<int, int, int, float>(GetTmAnalog));
       _engineScope.SetVariable("SetTmStatus",           new Action<int, int, int, int>(SetTmStatus));
       _engineScope.SetVariable("SetTmAnalog",           new Action<int, int, int, float>(SetTmAnalog));
+
+      _engineCompiledCode = _engine.CreateScriptSourceFromString(_script)
+                                   .Compile();
     }
 
 
-    public override async Task ExecuteScript()
+    public override void ExecuteScript()
     {
-      _engine.Execute(_script, _engineScope);
+      _engineCompiledCode.Execute(_engineScope);
     }
   }
 }
