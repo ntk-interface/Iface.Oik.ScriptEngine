@@ -10,25 +10,22 @@ namespace Iface.Oik.ScriptEngine.Engines
 {
   public abstract class AbstractEngine : BackgroundService
   {
+    private readonly IOikDataApi _api;
+
     private readonly   string _name;
-    protected readonly string _script;
-    private            int    _scriptTimeout = 2000;
-    private            bool   _isScriptTimeoutOverriden;
+    protected readonly string Script;
 
-    private IOikDataApi _api;
+    private int  _scriptTimeout = 2000;
+    private bool _isScriptTimeoutOverriden;
 
 
-    protected AbstractEngine(string name,
-                             string script)
+    protected AbstractEngine(IOikDataApi api,
+                             string      name,
+                             string      script)
     {
-      _name   = name;
-      _script = script;
-    }
-
-
-    public void InitApi(IOikDataApi api)
-    {
-      _api = api;
+      _api   = api;
+      _name  = name;
+      Script = script;
     }
 
 
@@ -36,6 +33,7 @@ namespace Iface.Oik.ScriptEngine.Engines
     {
       while (!stoppingToken.IsCancellationRequested)
       {
+        await Task.Delay(_scriptTimeout, stoppingToken);
         try
         {
           var sw = Stopwatch.StartNew();
@@ -46,9 +44,11 @@ namespace Iface.Oik.ScriptEngine.Engines
         {
           Tms.PrintDebug($"Ошибка при расчете скрипта \"{_name}\": {ex.Message}");
         }
-        await Task.Delay(_scriptTimeout, stoppingToken);
       }
     }
+
+
+    protected abstract void ExecuteScript();
 
 
     protected void OverrideScriptTimeout(int timeout)
@@ -84,9 +84,5 @@ namespace Iface.Oik.ScriptEngine.Engines
       _api.SetAnalog(ch, rtu, point, value).Wait();
       // Tms.PrintDebug($"#TT{ch}:{rtu}:{point} <- {value}");
     }
-
-
-    public abstract    void InitEngine();
-    protected abstract void ExecuteScript();
   }
 }

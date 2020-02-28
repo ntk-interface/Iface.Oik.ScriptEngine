@@ -49,7 +49,6 @@ namespace Iface.Oik.ScriptEngine
             // регистрация фоновых служб
             services.AddHostedService<TmStartup>();
             services.AddSingleton<IHostedService>(provider => provider.GetService<ServerService>());
-            services.AddHostedService<EngineStartup>();
             services.AddEngines();
           });
   }

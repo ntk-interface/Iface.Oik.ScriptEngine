@@ -1,22 +1,17 @@
 using System;
+using Iface.Oik.Tm.Interfaces;
 using IronPython.Hosting;
 
 namespace Iface.Oik.ScriptEngine.Engines
 {
   public class PythonEngine : AbstractEngine
   {
-    private Microsoft.Scripting.Hosting.ScriptEngine _engine;
-    private Microsoft.Scripting.Hosting.ScriptScope  _engineScope;
-    private Microsoft.Scripting.Hosting.CompiledCode _engineCompiledCode;
+    private readonly Microsoft.Scripting.Hosting.ScriptEngine _engine;
+    private readonly Microsoft.Scripting.Hosting.ScriptScope  _engineScope;
 
 
-    public PythonEngine(string name, string script)
-      : base(name, script)
-    {
-    }
-
-
-    public override void InitEngine()
+    public PythonEngine(IOikDataApi api, string name, string script)
+      : base(api, name, script)
     {
       _engine      = Python.CreateEngine();
       _engineScope = _engine.CreateScope();
@@ -25,15 +20,12 @@ namespace Iface.Oik.ScriptEngine.Engines
       _engineScope.SetVariable("GetTmAnalog",           new Func<int, int, int, float>(GetTmAnalog));
       _engineScope.SetVariable("SetTmStatus",           new Action<int, int, int, int>(SetTmStatus));
       _engineScope.SetVariable("SetTmAnalog",           new Action<int, int, int, float>(SetTmAnalog));
-
-      _engineCompiledCode = _engine.CreateScriptSourceFromString(_script)
-                                   .Compile();
     }
 
 
     protected override void ExecuteScript()
     {
-      _engineCompiledCode.Execute(_engineScope);
+      _engine.Execute(Script, _engineScope);
     }
   }
 }

@@ -1,20 +1,16 @@
 using System;
+using Iface.Oik.Tm.Interfaces;
 using Jint;
 
 namespace Iface.Oik.ScriptEngine.Engines
 {
   public class JavascriptEngine : AbstractEngine
   {
-    private Engine _engine;
+    private readonly Engine _engine;
 
 
-    public JavascriptEngine(string name, string script)
-      : base(name, script)
-    {
-    }
-
-
-    public override void InitEngine()
+    public JavascriptEngine(IOikDataApi api, string name, string script)
+      : base(api, name, script)
     {
       _engine = new Engine();
       _engine.SetValue("OverrideScriptTimeout", new Action<int>(OverrideScriptTimeout))
@@ -27,7 +23,7 @@ namespace Iface.Oik.ScriptEngine.Engines
 
     protected override void ExecuteScript()
     {
-      _engine.Execute(_script);
+      _engine.Execute(Script);
     }
   }
 }
