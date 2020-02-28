@@ -31,9 +31,10 @@ namespace Iface.Oik.ScriptEngine.Engines
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+      await Task.Delay(100, stoppingToken); // такое асинхронное ожидание даёт хосту возможность завершить инициализацию
+      
       while (!stoppingToken.IsCancellationRequested)
       {
-        await Task.Delay(_scriptTimeout, stoppingToken);
         try
         {
           var sw = Stopwatch.StartNew();
@@ -44,6 +45,7 @@ namespace Iface.Oik.ScriptEngine.Engines
         {
           Tms.PrintDebug($"Ошибка при расчете скрипта \"{_name}\": {ex.Message}");
         }
+        await Task.Delay(_scriptTimeout, stoppingToken);
       }
     }
 
