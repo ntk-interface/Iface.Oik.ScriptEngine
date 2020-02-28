@@ -3,7 +3,7 @@ using Jint;
 
 namespace Iface.Oik.ScriptEngine.Engines
 {
-  public class JavascriptEngine : ScriptEngine
+  public class JavascriptEngine : AbstractEngine
   {
     private Engine _engine;
 
@@ -25,7 +25,7 @@ namespace Iface.Oik.ScriptEngine.Engines
     }
 
 
-    public override void ExecuteScript()
+    protected override void ExecuteScript()
     {
       _engine.Execute(_script);
     }

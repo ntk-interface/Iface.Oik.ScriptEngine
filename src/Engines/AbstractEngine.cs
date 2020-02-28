@@ -4,11 +4,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Iface.Oik.Tm.Helpers;
 using Iface.Oik.Tm.Interfaces;
-using Iface.Oik.Tm.Services;
+using Microsoft.Extensions.Hosting;
 
-namespace Iface.Oik.ScriptEngine
+namespace Iface.Oik.ScriptEngine.Engines
 {
-  public abstract class ScriptEngine : BackgroundService
+  public abstract class AbstractEngine : BackgroundService
   {
     private readonly   string _name;
     protected readonly string _script;
@@ -18,11 +18,17 @@ namespace Iface.Oik.ScriptEngine
     private IOikDataApi _api;
 
 
-    protected ScriptEngine(string name,
-                           string script)
+    protected AbstractEngine(string name,
+                             string script)
     {
       _name   = name;
       _script = script;
+    }
+
+
+    public void InitApi(IOikDataApi api)
+    {
+      _api = api;
     }
 
 
@@ -43,16 +49,6 @@ namespace Iface.Oik.ScriptEngine
         await Task.Delay(_scriptTimeout, stoppingToken);
       }
     }
-
-
-    public void InitApi(IOikDataApi api)
-    {
-      _api = api;
-    }
-
-
-    public abstract void InitEngine();
-    public abstract void ExecuteScript();
 
 
     protected void OverrideScriptTimeout(int timeout)
@@ -88,5 +84,9 @@ namespace Iface.Oik.ScriptEngine
       _api.SetAnalog(ch, rtu, point, value).Wait();
       // Tms.PrintDebug($"#TT{ch}:{rtu}:{point} <- {value}");
     }
+
+
+    public abstract    void InitEngine();
+    protected abstract void ExecuteScript();
   }
 }

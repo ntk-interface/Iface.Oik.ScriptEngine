@@ -3,7 +3,7 @@ using IronPython.Hosting;
 
 namespace Iface.Oik.ScriptEngine.Engines
 {
-  public class PythonEngine : ScriptEngine
+  public class PythonEngine : AbstractEngine
   {
     private Microsoft.Scripting.Hosting.ScriptEngine _engine;
     private Microsoft.Scripting.Hosting.ScriptScope  _engineScope;
@@ -31,7 +31,7 @@ namespace Iface.Oik.ScriptEngine.Engines
     }
 
 
-    public override void ExecuteScript()
+    protected override void ExecuteScript()
     {
       _engineCompiledCode.Execute(_engineScope);
     }
