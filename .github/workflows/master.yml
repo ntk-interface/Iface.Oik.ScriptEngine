@@ -35,15 +35,15 @@ jobs:
         dotnet publish -c Release -r win-x64 --self-contained false -o dist_windows/bin
         dotnet publish -c Release -r linux-x64 --self-contained false -o dist_linux/bin
       
-    - name: Copy config samples
+    - name: Copy script samples
       run: | 
-        cp -r sample_configs dist_windows/sample_configs
-        cp -r sample_configs dist_linux/sample_configs
+        cp -r sample_scripts dist_windows/sample_scripts
+        cp -r sample_scripts dist_linux/sample_scripts
       
-    - name: Create empty configs folder
+    - name: Create empty scripts folder
       run: |
-        mkdir dist_windows/configs
-        mkdir dist_linux/configs
+        mkdir dist_windows/scripts
+        mkdir dist_linux/scripts
         
     - name: Make archives
       run: |
