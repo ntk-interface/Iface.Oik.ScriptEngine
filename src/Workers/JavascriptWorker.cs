@@ -2,14 +2,14 @@ using System;
 using Iface.Oik.Tm.Interfaces;
 using Jint;
 
-namespace Iface.Oik.ScriptEngine.Engines
+namespace Iface.Oik.ScriptEngine.Workers
 {
-  public class JavascriptEngine : AbstractEngine
+  public class JavascriptWorker : Worker
   {
     private readonly Engine _engine;
 
 
-    public JavascriptEngine(IOikDataApi api, string name, string script)
+    public JavascriptWorker(IOikDataApi api, string name, string script)
       : base(api, name, script)
     {
       _engine = new Engine();
@@ -21,7 +21,7 @@ namespace Iface.Oik.ScriptEngine.Engines
     }
 
 
-    protected override void ExecuteScript()
+    protected override void DoWork()
     {
       _engine.Execute(Script);
     }

@@ -1,16 +1,17 @@
 using System;
 using Iface.Oik.Tm.Interfaces;
 using IronPython.Hosting;
+using Microsoft.Scripting.Hosting;
 
-namespace Iface.Oik.ScriptEngine.Engines
+namespace Iface.Oik.ScriptEngine.Workers
 {
-  public class PythonEngine : AbstractEngine
+  public class PythonWorker : Worker
   {
     private readonly Microsoft.Scripting.Hosting.ScriptEngine _engine;
-    private readonly Microsoft.Scripting.Hosting.ScriptScope  _engineScope;
+    private readonly ScriptScope  _engineScope;
 
 
-    public PythonEngine(IOikDataApi api, string name, string script)
+    public PythonWorker(IOikDataApi api, string name, string script)
       : base(api, name, script)
     {
       _engine      = Python.CreateEngine();
@@ -23,7 +24,7 @@ namespace Iface.Oik.ScriptEngine.Engines
     }
 
 
-    protected override void ExecuteScript()
+    protected override void DoWork()
     {
       _engine.Execute(Script, _engineScope);
     }

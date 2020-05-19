@@ -49,7 +49,10 @@ namespace Iface.Oik.ScriptEngine
             // регистрация фоновых служб
             services.AddHostedService<TmStartup>();
             services.AddSingleton<IHostedService>(provider => provider.GetService<ServerService>());
-            services.AddEngines();
+            if (!services.AddWorkers())
+            {
+              Environment.Exit(-1);
+            }
           });
   }
 }

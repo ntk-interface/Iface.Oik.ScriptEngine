@@ -6,9 +6,9 @@ using Iface.Oik.Tm.Helpers;
 using Iface.Oik.Tm.Interfaces;
 using Microsoft.Extensions.Hosting;
 
-namespace Iface.Oik.ScriptEngine.Engines
+namespace Iface.Oik.ScriptEngine
 {
-  public abstract class AbstractEngine : BackgroundService
+  public abstract class Worker : BackgroundService
   {
     private readonly IOikDataApi _api;
 
@@ -19,11 +19,12 @@ namespace Iface.Oik.ScriptEngine.Engines
     private bool _isScriptTimeoutOverriden;
 
 
-    protected AbstractEngine(IOikDataApi api,
-                             string      name,
-                             string      script)
+    protected Worker(IOikDataApi api,
+                     string      name,
+                     string      script)
     {
-      _api   = api;
+      _api = api;
+
       _name  = name;
       Script = script;
     }
@@ -31,14 +32,14 @@ namespace Iface.Oik.ScriptEngine.Engines
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-      await Task.Delay(100, stoppingToken); // такое асинхронное ожидание даёт хосту возможность завершить инициализацию
-      
+      await Task.Delay(500, stoppingToken); // такое асинхронное ожидание даёт хосту возможность завершить инициализацию
+
       while (!stoppingToken.IsCancellationRequested)
       {
         try
         {
           var sw = Stopwatch.StartNew();
-          ExecuteScript();
+          DoWork();
           Tms.PrintDebug($"Скрипт \"{_name}\" рассчитан за {sw.ElapsedMilliseconds} мс");
         }
         catch (Exception ex)
@@ -50,13 +51,15 @@ namespace Iface.Oik.ScriptEngine.Engines
     }
 
 
-    protected abstract void ExecuteScript();
+    protected abstract void DoWork();
 
 
     protected void OverrideScriptTimeout(int timeout)
     {
-      if (_isScriptTimeoutOverriden) return;
-
+      if (_isScriptTimeoutOverriden)
+      {
+        return;
+      }
       _scriptTimeout            = timeout;
       _isScriptTimeoutOverriden = true;
     }
@@ -77,14 +80,12 @@ namespace Iface.Oik.ScriptEngine.Engines
     protected void SetTmStatus(int ch, int rtu, int point, int status)
     {
       _api.SetStatus(ch, rtu, point, status).Wait();
-      // Tms.PrintDebug($"#TC{ch}:{rtu}:{point} <- {status}");
     }
 
 
     protected void SetTmAnalog(int ch, int rtu, int point, float value)
     {
       _api.SetAnalog(ch, rtu, point, value).Wait();
-      // Tms.PrintDebug($"#TT{ch}:{rtu}:{point} <- {value}");
     }
   }
 }

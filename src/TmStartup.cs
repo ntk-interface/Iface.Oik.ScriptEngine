@@ -11,8 +11,8 @@ namespace Iface.Oik.ScriptEngine
   public class ServerService : CommonServerService, IHostedService
   {
   }
-  
-  
+
+
   public class TmStartup : BackgroundService
   {
     private const string ApplicationName = "ScriptEngine";
@@ -38,20 +38,20 @@ namespace Iface.Oik.ScriptEngine
     {
       var commandLineArgs = Environment.GetCommandLineArgs();
 
-      (_tmCid, _userInfo, _stopEventHandle) =
-        Tms.InitializeAsTaskWithoutSql(new TmOikTaskOptions
-                                       {
-                                         TraceName    = TraceName,
-                                         TraceComment = TraceComment,
-                                       },
-                                       new TmInitializeOptions
-                                       {
-                                         ApplicationName = ApplicationName,
-                                         TmServer        = commandLineArgs.ElementAtOrDefault(1) ?? "TMS",
-                                         Host            = commandLineArgs.ElementAtOrDefault(2) ?? ".",
-                                         User            = commandLineArgs.ElementAtOrDefault(3) ?? "",
-                                         Password        = commandLineArgs.ElementAtOrDefault(4) ?? "",
-                                       });
+      (_tmCid, _userInfo, _stopEventHandle) = Tms.InitializeAsTaskWithoutSql(
+        new TmOikTaskOptions
+        {
+          TraceName    = TraceName,
+          TraceComment = TraceComment,
+        },
+        new TmInitializeOptions
+        {
+          ApplicationName = ApplicationName,
+          TmServer        = commandLineArgs.ElementAtOrDefault(1) ?? "TMS",
+          Host            = commandLineArgs.ElementAtOrDefault(2) ?? ".",
+          User            = commandLineArgs.ElementAtOrDefault(3) ?? "",
+          Password        = commandLineArgs.ElementAtOrDefault(4) ?? "",
+        });
 
       Tms.PrintMessage("Соединение с сервером установлено");
     }
@@ -60,6 +60,7 @@ namespace Iface.Oik.ScriptEngine
     public override Task StartAsync(CancellationToken cancellationToken)
     {
       _infr.InitializeTmWithoutSql(_tmCid, _userInfo);
+      
       return base.StartAsync(cancellationToken);
     }
 
