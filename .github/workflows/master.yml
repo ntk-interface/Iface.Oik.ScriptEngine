@@ -7,7 +7,7 @@ on:
     
 env:
    APP_NAME: Iface.Oik.ScriptEngine
-   DEPLOY_PATH: C:\Artifacts\${{APP_NAME}}
+   DEPLOY_PATH: C:\Artifacts\Iface.Oik.ScriptEngine
 
 jobs:
   build:
