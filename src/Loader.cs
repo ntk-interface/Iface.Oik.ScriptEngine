@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Reflection;
 using Iface.Oik.ScriptEngine.Workers;
@@ -10,10 +11,7 @@ namespace Iface.Oik.ScriptEngine
 {
   public static class Loader
   {
-    private static readonly string ScriptsPath = Path.Combine(
-      Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-      "..",
-      "scripts");
+    private static readonly string ScriptsPath = Path.Combine(AppContext.BaseDirectory, "scripts");
 
 
     public static bool AddWorkers(this IServiceCollection services)
