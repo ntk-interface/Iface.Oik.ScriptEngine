@@ -19,9 +19,10 @@ namespace Iface.Oik.ScriptEngine
     private const string TraceName       = "ScriptEngine";
     private const string TraceComment    = "<Iface.Oik.ScriptEngine>";
 
-    private static int        _tmCid;
-    private static TmUserInfo _userInfo;
-    private static uint       _stopEventHandle;
+    private static int              _tmCid;
+    private static TmUserInfo       _userInfo;
+    private static TmServerFeatures _serverFeatures;
+    private static uint             _stopEventHandle;
 
     private readonly IHostApplicationLifetime _applicationLifetime;
     private readonly ICommonInfrastructure    _infr;
@@ -38,7 +39,7 @@ namespace Iface.Oik.ScriptEngine
     {
       var commandLineArgs = Environment.GetCommandLineArgs();
 
-      (_tmCid, _userInfo, _stopEventHandle) = Tms.InitializeAsTaskWithoutSql(
+      (_tmCid, _userInfo, _serverFeatures, _stopEventHandle) = Tms.InitializeAsTaskWithoutSql(
         new TmOikTaskOptions
         {
           TraceName    = TraceName,
@@ -59,8 +60,8 @@ namespace Iface.Oik.ScriptEngine
 
     public override Task StartAsync(CancellationToken cancellationToken)
     {
-      _infr.InitializeTmWithoutSql(_tmCid, _userInfo);
-      
+      _infr.InitializeTmWithoutSql(_tmCid, _userInfo, _serverFeatures);
+
       return base.StartAsync(cancellationToken);
     }
 

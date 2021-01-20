@@ -15,6 +15,8 @@ namespace Iface.Oik.ScriptEngine.Workers
       : base(api, name, script)
     {
       _engine      = Python.CreateEngine();
+      UpdateEngineSearchPath();
+      
       _engineScope = _engine.CreateScope();
       _engineScope.SetVariable("OverrideScriptTimeout", new Action<int>(OverrideScriptTimeout));
       _engineScope.SetVariable("GetTmStatus",           new Func<int, int, int, int>(GetTmStatus));
@@ -27,6 +29,14 @@ namespace Iface.Oik.ScriptEngine.Workers
     protected override void DoWork()
     {
       _engine.Execute(Script, _engineScope);
+    }
+
+
+    private void UpdateEngineSearchPath()
+    {
+      var paths = _engine.GetSearchPaths();
+      paths.Add("PythonLib.zip");
+      _engine.SetSearchPaths(paths);
     }
   }
 }
