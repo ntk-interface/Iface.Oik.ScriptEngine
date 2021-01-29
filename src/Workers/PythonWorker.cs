@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Iface.Oik.Tm.Interfaces;
 using IronPython.Hosting;
 using Microsoft.Scripting.Hosting;
@@ -7,28 +8,32 @@ namespace Iface.Oik.ScriptEngine.Workers
 {
   public class PythonWorker : Worker
   {
+    private readonly string _script;
+
     private readonly Microsoft.Scripting.Hosting.ScriptEngine _engine;
-    private readonly ScriptScope  _engineScope;
+    private readonly ScriptScope                              _engineScope;
 
 
-    public PythonWorker(IOikDataApi api, string name, string script)
-      : base(api, name, script)
+    public PythonWorker(IOikDataApi api, string filename)
+      : base(api, filename)
     {
-      _engine      = Python.CreateEngine();
+      _script = File.ReadAllText(filename);
+
+      _engine = Python.CreateEngine();
       UpdateEngineSearchPath();
-      
+
       _engineScope = _engine.CreateScope();
       _engineScope.SetVariable("OverrideScriptTimeout", new Action<int>(OverrideScriptTimeout));
-      _engineScope.SetVariable("GetTmStatus",           new Func<int, int, int, int>(GetTmStatus));
-      _engineScope.SetVariable("GetTmAnalog",           new Func<int, int, int, float>(GetTmAnalog));
-      _engineScope.SetVariable("SetTmStatus",           new Action<int, int, int, int>(SetTmStatus));
-      _engineScope.SetVariable("SetTmAnalog",           new Action<int, int, int, float>(SetTmAnalog));
+      _engineScope.SetVariable("GetTmStatus", new Func<int, int, int, int>(GetTmStatus));
+      _engineScope.SetVariable("GetTmAnalog", new Func<int, int, int, float>(GetTmAnalog));
+      _engineScope.SetVariable("SetTmStatus", new Action<int, int, int, int>(SetTmStatus));
+      _engineScope.SetVariable("SetTmAnalog", new Action<int, int, int, float>(SetTmAnalog));
     }
 
 
     protected override void DoWork()
     {
-      _engine.Execute(Script, _engineScope);
+      _engine.Execute(_script, _engineScope);
     }
 
 

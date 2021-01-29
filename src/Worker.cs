@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Iface.Oik.Tm.Helpers;
@@ -12,21 +13,19 @@ namespace Iface.Oik.ScriptEngine
   {
     private readonly IOikDataApi _api;
 
-    private readonly   string _name;
-    protected readonly string Script;
+    private readonly string _name;
 
     private int  _scriptTimeout = 2000;
     private bool _isScriptTimeoutOverriden;
 
 
-    protected Worker(IOikDataApi api,
-                     string      name,
-                     string      script)
-    {
-      _api = api;
+    protected abstract void DoWork();
 
-      _name  = name;
-      Script = script;
+
+    protected Worker(IOikDataApi api, string filename)
+    {
+      _api  = api;
+      _name = Path.GetFileName(filename);
     }
 
 
@@ -51,10 +50,7 @@ namespace Iface.Oik.ScriptEngine
     }
 
 
-    protected abstract void DoWork();
-
-
-    protected void OverrideScriptTimeout(int timeout)
+    public void OverrideScriptTimeout(int timeout)
     {
       if (_isScriptTimeoutOverriden)
       {
@@ -65,27 +61,87 @@ namespace Iface.Oik.ScriptEngine
     }
 
 
-    protected int GetTmStatus(int ch, int rtu, int point)
+    public int GetTmStatus(int ch, int rtu, int point)
     {
       return _api.GetStatus(ch, rtu, point).GetAwaiter().GetResult();
     }
 
 
-    protected float GetTmAnalog(int ch, int rtu, int point)
+    public int GetTmStatus(TmAddr addr)
+    {
+      return GetTmStatus(addr.Ch, addr.Rtu, addr.Point);
+    }
+
+
+    public float GetTmAnalog(int ch, int rtu, int point)
     {
       return _api.GetAnalog(ch, rtu, point).GetAwaiter().GetResult();
     }
 
 
-    protected void SetTmStatus(int ch, int rtu, int point, int status)
+    public float GetTmAnalog(TmAddr addr)
+    {
+      return GetTmAnalog(addr.Ch, addr.Rtu, addr.Point);
+    }
+
+
+    public void SetTmStatus(int ch, int rtu, int point, int status)
     {
       _api.SetStatus(ch, rtu, point, status).Wait();
     }
 
 
-    protected void SetTmAnalog(int ch, int rtu, int point, float value)
+    public void SetTmStatus(TmAddr addr, int status)
+    {
+      SetTmStatus(addr.Ch, addr.Rtu, addr.Point, status);
+    }
+
+
+    public void SetTmAnalog(int ch, int rtu, int point, float value)
     {
       _api.SetAnalog(ch, rtu, point, value).Wait();
+    }
+
+
+    public void SetTmAnalog(TmAddr addr, float value)
+    {
+      SetTmAnalog(addr.Ch, addr.Rtu, addr.Point, value);
+    }
+
+
+    public void SetTmStatusFlags(int ch, int rtu, int point, TmFlags flags)
+    {
+      _api.SetTagFlags(new TmStatus(ch, rtu, point), flags);
+    }
+
+
+    public void SetTmStatusFlags(TmAddr addr, TmFlags flags)
+    {
+      SetTmStatusFlags(addr.Ch, addr.Rtu, addr.Point, flags);
+    }
+
+
+    public void SetTmAnalogFlags(int ch, int rtu, int point, TmFlags flags)
+    {
+      _api.SetTagFlags(new TmAnalog(ch, rtu, point), flags);
+    }
+
+
+    public void SetTmAnalogFlags(TmAddr addr, TmFlags flags)
+    {
+      SetTmAnalogFlags(addr.Ch, addr.Rtu, addr.Point, flags);
+    }
+
+
+    public string GetExpressionResult(string expression)
+    {
+      return _api.GetExpressionResult(expression).GetAwaiter().GetResult();
+    }
+
+
+    public void LogDebug(string message)
+    {
+      Tms.PrintDebug($"Отладочное сообщение скрипта \"{_name}\": {message}");
     }
   }
 }

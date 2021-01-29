@@ -39,6 +39,13 @@ jobs:
         dotnet publish -c Release -r win-x64 --self-contained false /p:PublishSingleFile=true /p:CopyOutputSymbolsToPublishDirectory=false -o dist_windows
         dotnet publish -c Release -r linux-x64 --self-contained false /p:PublishSingleFile=true /p:CopyOutputSymbolsToPublishDirectory=false -o dist_linux
       
+    - name: Zip python libs and clear folders
+      run: |
+        7z a ./dist_windows/PythonLib.zip ./dist_windows/Lib/*
+        7z a ./dist_linux/PythonLib.zip ./dist_linux/Lib/*
+        rmdir -rf ./dist_windows/Lib/
+        rmdir -rf ./dist_linux/Lib/
+
     - name: Copy script samples
       run: | 
         cp -r sample_scripts dist_windows/sample_scripts

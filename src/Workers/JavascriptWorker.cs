@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Iface.Oik.Tm.Interfaces;
 using Jint;
 
@@ -6,12 +7,16 @@ namespace Iface.Oik.ScriptEngine.Workers
 {
   public class JavascriptWorker : Worker
   {
+    private readonly string _script;
+    
     private readonly Engine _engine;
 
 
-    public JavascriptWorker(IOikDataApi api, string name, string script)
-      : base(api, name, script)
+    public JavascriptWorker(IOikDataApi api, string filename)
+      : base(api, filename)
     {
+      _script = File.ReadAllText(filename);
+      
       _engine = new Engine();
       _engine.SetValue("OverrideScriptTimeout", new Action<int>(OverrideScriptTimeout))
              .SetValue("GetTmStatus", new Func<int, int, int, int>(GetTmStatus))
@@ -23,7 +28,7 @@ namespace Iface.Oik.ScriptEngine.Workers
 
     protected override void DoWork()
     {
-      _engine.Execute(Script);
+      _engine.Execute(_script);
     }
   }
 }

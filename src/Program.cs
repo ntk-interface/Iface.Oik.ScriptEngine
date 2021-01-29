@@ -35,7 +35,7 @@ namespace Iface.Oik.ScriptEngine
 
     public static IHostBuilder CreateHostBuilder(string[] args) =>
       Host.CreateDefaultBuilder(args)
-          .ConfigureServices((hostContext, services) =>
+          .ConfigureServices((_, services) =>
           {
             // регистрация сервисов ОИК
             services.AddSingleton<ITmNative, TmNative>();

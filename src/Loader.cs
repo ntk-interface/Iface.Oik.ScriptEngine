@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Reflection;
 using Iface.Oik.ScriptEngine.Workers;
 using Iface.Oik.Tm.Helpers;
 using Iface.Oik.Tm.Interfaces;
@@ -23,28 +22,30 @@ namespace Iface.Oik.ScriptEngine
       }
 
       var workersCount = 0;
-      foreach (var file in Directory.GetFiles(ScriptsPath, "*"))
+      foreach (var filename in Directory.GetFiles(ScriptsPath, "*"))
       {
-        var name   = Path.GetFileName(file);
-        var script = File.ReadAllText(file);
-        switch (Path.GetExtension(file))
+        switch (Path.GetExtension(filename))
         {
           case ".js":
             services.AddSingleton<IHostedService>(provider => new JavascriptWorker(provider.GetService<IOikDataApi>(),
-                                                                                   name,
-                                                                                   script));
+                                                                                   filename));
             workersCount++;
             break;
 
           case ".py":
             services.AddSingleton<IHostedService>(provider => new PythonWorker(provider.GetService<IOikDataApi>(),
-                                                                               name,
-                                                                               script));
+                                                                               filename));
+            workersCount++;
+            break;
+
+          case ".xlsx":
+            services.AddSingleton<IHostedService>(provider => new ExcelWorker(provider.GetService<IOikDataApi>(),
+                                                                              filename));
             workersCount++;
             break;
         }
       }
-      
+
       if (workersCount == 0)
       {
         Tms.PrintError("Не найдено ни одного скрипта");
