@@ -43,8 +43,8 @@ jobs:
       run: |
         7z a ./dist_windows/PythonLib.zip ./dist_windows/Lib/*
         7z a ./dist_linux/PythonLib.zip ./dist_linux/Lib/*
-        rmdir -rf ./dist_windows/Lib/
-        rmdir -rf ./dist_linux/Lib/
+        rmdir -rf dist_windows/Lib
+        rmdir -rf dist_linux/Lib
 
     - name: Copy script samples
       run: | 
