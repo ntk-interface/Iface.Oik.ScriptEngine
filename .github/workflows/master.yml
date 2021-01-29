@@ -56,8 +56,8 @@ jobs:
         
     - name: Make archives (exclude Libs folder)
       run: |
-        7z a ${{steps.artifacts.outputs.artifact_windows}} ./dist_windows/* -x!dist_windows/Lib
-        tar -czf ${{steps.artifacts.outputs.artifact_linux}} -C dist_linux . --exclude "dist_linux/Lib"
+        7z a ${{steps.artifacts.outputs.artifact_windows}} ./dist_windows/* -x!Lib
+        tar --exclude "dist_linux/Lib" -czf ${{steps.artifacts.outputs.artifact_linux}} -C dist_linux . 
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
