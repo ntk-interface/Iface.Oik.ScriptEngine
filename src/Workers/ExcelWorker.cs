@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -102,10 +101,8 @@ namespace Iface.Oik.ScriptEngine.Workers
 
     private bool TryFetchExpressionResult(ExcelRange cell, string expression)
     {
-      var expressionResult = GetExpressionResult(expression);
-      if (!float.TryParse(expressionResult, NumberStyles.Any, CultureInfo.InvariantCulture, out var floatValue))
+      if (!TryGetExpressionResult(expression, out var floatValue))
       {
-        LogDebug(expressionResult);
         SetCellError(cell);
         return false;
       }

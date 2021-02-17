@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -136,6 +137,18 @@ namespace Iface.Oik.ScriptEngine
     public string GetExpressionResult(string expression)
     {
       return _api.GetExpressionResult(expression).GetAwaiter().GetResult();
+    }
+
+
+    public bool TryGetExpressionResult(string expression, out float value)
+    {
+      var expressionResult = GetExpressionResult(expression);
+      if (!float.TryParse(expressionResult, NumberStyles.Any, CultureInfo.InvariantCulture, out value))
+      {
+        LogDebug(expressionResult);
+        return false;
+      }
+      return true;
     }
 
 

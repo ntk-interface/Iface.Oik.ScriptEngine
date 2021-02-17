@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using Iface.Oik.Tm.Interfaces;
 using OfficeOpenXml.FormulaParsing;
@@ -39,10 +38,8 @@ namespace Iface.Oik.ScriptEngine.Workers
 
         var expression = ArgToString(functionArguments, 0);
 
-        var expressionResult = _worker.GetExpressionResult(expression);
-        if (!float.TryParse(expressionResult, NumberStyles.Any, CultureInfo.InvariantCulture, out var floatValue))
+        if (!_worker.TryGetExpressionResult(expression, out var floatValue))
         {
-          _worker.LogDebug(expressionResult);
           throw new Exception();
         }
         return CreateResult((double) floatValue, DataType.Decimal);
