@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Iface.Oik.Tm.Helpers;
 using Iface.Oik.Tm.Interfaces;
+using Iface.Oik.Tm.Utils;
 using Microsoft.Extensions.Hosting;
 
 namespace Iface.Oik.ScriptEngine
@@ -18,6 +19,7 @@ namespace Iface.Oik.ScriptEngine
 
     private int  _scriptTimeout = 2000;
     private bool _isScriptTimeoutOverriden;
+    private bool _isTelecontrolAllowed;
 
 
     protected abstract void DoWork();
@@ -51,6 +53,17 @@ namespace Iface.Oik.ScriptEngine
     }
 
 
+    public void AllowTelecontrol()
+    {
+      if (_isTelecontrolAllowed)
+      {
+        return;
+      }
+      _isTelecontrolAllowed = true;
+      LogDebug("Команды ТУ разрешены");
+    }
+
+
     public void OverrideScriptTimeout(int timeout)
     {
       if (_isScriptTimeoutOverriden)
@@ -59,6 +72,33 @@ namespace Iface.Oik.ScriptEngine
       }
       _scriptTimeout            = timeout;
       _isScriptTimeoutOverriden = true;
+    }
+
+
+    public void Telecontrol(int ch, int rtu, int point, int explicitNewStatus)
+    {
+      var tmStatus = new TmStatus(ch, rtu, point);
+
+      if (!_isTelecontrolAllowed)
+      {
+        Tms.PrintDebug($"Не подана команда ТУ на {tmStatus.TmAddr} - в скрипте не разрешены команды");
+        return;
+      }
+      var result = _api.TelecontrolExplicitly(tmStatus, explicitNewStatus).GetAwaiter().GetResult();
+      if (result == TmTelecontrolResult.Success)
+      {
+        Tms.PrintDebug($"Выполнена команда ТУ на {tmStatus.TmAddr}");
+      }
+      else
+      {
+        Tms.PrintDebug($"Ошибка команды ТУ на {tmStatus.TmAddr} - {result.GetDescription()}");
+      }
+    }
+
+
+    public bool IsTmStatusOn(int ch, int rtu, int point)
+    {
+      return GetTmStatus(ch, rtu, point) > 0;
     }
 
 
