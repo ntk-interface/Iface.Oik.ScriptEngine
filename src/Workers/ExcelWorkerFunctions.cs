@@ -12,11 +12,37 @@ namespace Iface.Oik.ScriptEngine.Workers
   {
     public ExcelWorkerFunctions(ExcelWorker worker)
     {
-      Functions.Add("TM",          new Tm(worker));
-      Functions.Add("GetTmAnalog", new GetTmAnalog(worker));
-      Functions.Add("GetTmStatus", new GetTmStatus(worker));
-      Functions.Add("SetTmAnalog", new SetTmAnalog(worker));
-      Functions.Add("SetTmStatus", new SetTmStatus(worker));
+      Functions.Add("OverrideScriptTimeout", new OverrideScriptTimeout(worker));
+      Functions.Add("TM",                    new Tm(worker));
+      Functions.Add("GetTmAnalog",           new GetTmAnalog(worker));
+      Functions.Add("GetTmStatus",           new GetTmStatus(worker));
+      Functions.Add("SetTmAnalog",           new SetTmAnalog(worker));
+      Functions.Add("SetTmStatus",           new SetTmStatus(worker));
+    }
+
+
+    private class OverrideScriptTimeout : ExcelFunction
+    {
+      private readonly ExcelWorker _worker;
+
+
+      public OverrideScriptTimeout(ExcelWorker worker)
+      {
+        _worker = worker;
+      }
+
+
+      public override CompileResult Execute(IEnumerable<FunctionArgument> arguments, ParsingContext context)
+      {
+        var functionArguments = arguments.ToList();
+        ValidateArguments(functionArguments, 1);
+
+        var timeout = ArgToInt(functionArguments, 0);
+
+        _worker.OverrideScriptTimeout(timeout);
+        
+        return CreateResult(true, DataType.Boolean);
+      }
     }
 
 
