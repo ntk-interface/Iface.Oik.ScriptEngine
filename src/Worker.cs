@@ -180,6 +180,16 @@ namespace Iface.Oik.ScriptEngine
     }
 
 
+    public float GetExpressionResultFloat(string expression)
+    {
+      if (!TryGetExpressionResult(expression, out var value))
+      {
+        throw new Exception("Ошибка функции TM");
+      }
+      return value;
+    }
+
+
     public bool TryGetExpressionResult(string expression, out float value)
     {
       var expressionResult = GetExpressionResult(expression);

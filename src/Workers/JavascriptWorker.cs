@@ -20,6 +20,7 @@ namespace Iface.Oik.ScriptEngine.Workers
       _engine = new Engine();
       _engine.SetValue("OverrideScriptTimeout", new Action<int>(OverrideScriptTimeout))
              .SetValue("AllowTelecontrol", new Action(AllowTelecontrol))
+             .SetValue("TM",               new Func<string, float>(GetExpressionResultFloat))
              .SetValue("GetTmStatus",      new Func<int, int, int, int>(GetTmStatus))
              .SetValue("GetTmAnalog",      new Func<int, int, int, float>(GetTmAnalog))
              .SetValue("SetTmStatus",      new Action<int, int, int, int>(SetTmStatus))

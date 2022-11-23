@@ -25,6 +25,7 @@ namespace Iface.Oik.ScriptEngine.Workers
       _engineScope = _engine.CreateScope();
       _engineScope.SetVariable("OverrideScriptTimeout", new Action<int>(OverrideScriptTimeout));
       _engineScope.SetVariable("AllowTelecontrol",      new Action(AllowTelecontrol));
+      _engineScope.SetVariable("TM",                    new Func<string, float>(GetExpressionResultFloat));
       _engineScope.SetVariable("GetTmStatus",           new Func<int, int, int, int>(GetTmStatus));
       _engineScope.SetVariable("GetTmAnalog",           new Func<int, int, int, float>(GetTmAnalog));
       _engineScope.SetVariable("SetTmStatus",           new Action<int, int, int, int>(SetTmStatus));
