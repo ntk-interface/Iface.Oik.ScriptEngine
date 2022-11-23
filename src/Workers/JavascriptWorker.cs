@@ -27,19 +27,23 @@ namespace Iface.Oik.ScriptEngine.Workers
              .SetValue("GetTmAnalog",           new Func<int, int, int, float>(GetTmAnalog))
              .SetValue("IsTmAnalogFlagRaised",  new Func<int, int, int, TmFlags, bool>(IsTmAnalogFlagRaised))
              .SetValue("SetTmStatus",           new Action<int, int, int, int>(SetTmStatus))
+             .SetValue("RaiseTmStatusFlag",     new Action<int, int, int, TmFlags>(RaiseTmStatusFlag))
+             .SetValue("ClearTmStatusFlag",     new Action<int, int, int, TmFlags>(ClearTmStatusFlag))
              .SetValue("SetTmAnalog",           new Action<int, int, int, float>(SetTmAnalog))
+             .SetValue("RaiseTmAnalogFlag",     new Action<int, int, int, TmFlags>(RaiseTmAnalogFlag))
+             .SetValue("ClearTmAnalogFlag",     new Action<int, int, int, TmFlags>(ClearTmAnalogFlag))
              .SetValue("Telecontrol",           new Action<int, int, int, int>(Telecontrol))
              .SetValue("FLAG_UNRELIABLE",       (int)TmFlags.Unreliable)
              .SetValue("FLAG_INVALID",          (int)TmFlags.Invalid)
              .SetValue("FLAG_ABNORMAL",         (int)TmFlags.Abnormal)
              .SetValue("FLAG_MANUALLY_BLOCKED", (int)TmFlags.ManuallyBlocked)
-             .SetValue("FLAG_MANUALLY_SET",     (int)TmFlags.ManuallyBlocked)
+             .SetValue("FLAG_MANUALLY_SET",     (int)TmFlags.ManuallySet)
              .SetValue("FLAG_LEVEL_1",          (int)TmFlags.LevelA)
              .SetValue("FLAG_LEVEL_2",          (int)TmFlags.LevelB)
              .SetValue("FLAG_LEVEL_3",          (int)TmFlags.LevelC)
              .SetValue("FLAG_LEVEL_4",          (int)TmFlags.LevelD)
              .SetValue("FLAG_UNACKED",          (int)TmFlags.Unacked)
-             ;
+        ;
     }
 
 

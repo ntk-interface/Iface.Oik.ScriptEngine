@@ -154,6 +154,30 @@ namespace Iface.Oik.ScriptEngine
     }
 
 
+    public void RaiseTmStatusFlag(int ch, int rtu, int point, TmFlags flags)
+    {
+      _api.SetTagFlags(new TmStatus(ch, rtu, point), flags);
+    }
+
+
+    public void RaiseTmStatusFlag(TmAddr addr, TmFlags flags)
+    {
+      RaiseTmStatusFlag(addr.Ch, addr.Rtu, addr.Point, flags);
+    }
+
+
+    public void ClearTmStatusFlag(int ch, int rtu, int point, TmFlags flags)
+    {
+      _api.ClearTagFlags(new TmStatus(ch, rtu, point), flags);
+    }
+
+
+    public void ClearTmStatusFlag(TmAddr addr, TmFlags flags)
+    {
+      ClearTmStatusFlag(addr.Ch, addr.Rtu, addr.Point, flags);
+    }
+
+
     public void SetTmAnalog(int ch, int rtu, int point, float value)
     {
       _api.SetAnalog(ch, rtu, point, value).Wait();
@@ -166,27 +190,27 @@ namespace Iface.Oik.ScriptEngine
     }
 
 
-    public void SetTmStatusFlags(int ch, int rtu, int point, TmFlags flags)
-    {
-      _api.SetTagFlags(new TmStatus(ch, rtu, point), flags);
-    }
-
-
-    public void SetTmStatusFlags(TmAddr addr, TmFlags flags)
-    {
-      SetTmStatusFlags(addr.Ch, addr.Rtu, addr.Point, flags);
-    }
-
-
-    public void SetTmAnalogFlags(int ch, int rtu, int point, TmFlags flags)
+    public void RaiseTmAnalogFlag(int ch, int rtu, int point, TmFlags flags)
     {
       _api.SetTagFlags(new TmAnalog(ch, rtu, point), flags);
     }
 
 
-    public void SetTmAnalogFlags(TmAddr addr, TmFlags flags)
+    public void RaiseTmAnalogFlag(TmAddr addr, TmFlags flags)
     {
-      SetTmAnalogFlags(addr.Ch, addr.Rtu, addr.Point, flags);
+      RaiseTmAnalogFlag(addr.Ch, addr.Rtu, addr.Point, flags);
+    }
+
+
+    public void ClearTmAnalogFlag(int ch, int rtu, int point, TmFlags flags)
+    {
+      _api.ClearTagFlags(new TmAnalog(ch, rtu, point), flags);
+    }
+
+
+    public void ClearTmAnalogFlag(TmAddr addr, TmFlags flags)
+    {
+      ClearTmAnalogFlag(addr.Ch, addr.Rtu, addr.Point, flags);
     }
 
 

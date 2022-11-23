@@ -32,13 +32,17 @@ namespace Iface.Oik.ScriptEngine.Workers
       _engineScope.SetVariable("GetTmAnalog",           new Func<int, int, int, float>(GetTmAnalog));
       _engineScope.SetVariable("IsTmAnalogFlagRaised",  new Func<int, int, int, TmFlags, bool>(IsTmAnalogFlagRaised));
       _engineScope.SetVariable("SetTmStatus",           new Action<int, int, int, int>(SetTmStatus));
+      _engineScope.SetVariable("RaiseTmStatusFlag",     new Action<int, int, int, TmFlags>(RaiseTmStatusFlag));
+      _engineScope.SetVariable("ClearTmStatusFlag",     new Action<int, int, int, TmFlags>(ClearTmStatusFlag));
       _engineScope.SetVariable("SetTmAnalog",           new Action<int, int, int, float>(SetTmAnalog));
+      _engineScope.SetVariable("RaiseTmAnalogFlag",     new Action<int, int, int, TmFlags>(RaiseTmAnalogFlag));
+      _engineScope.SetVariable("ClearTmAnalogFlag",     new Action<int, int, int, TmFlags>(ClearTmAnalogFlag));
       _engineScope.SetVariable("Telecontrol",           new Action<int, int, int, int>(Telecontrol));
       _engineScope.SetVariable("FLAG_UNRELIABLE",       TmFlags.Unreliable);
       _engineScope.SetVariable("FLAG_INVALID",          TmFlags.Invalid);
       _engineScope.SetVariable("FLAG_ABNORMAL",         TmFlags.Abnormal);
       _engineScope.SetVariable("FLAG_MANUALLY_BLOCKED", TmFlags.ManuallyBlocked);
-      _engineScope.SetVariable("FLAG_MANUALLY_SET",     TmFlags.ManuallyBlocked);
+      _engineScope.SetVariable("FLAG_MANUALLY_SET",     TmFlags.ManuallySet);
       _engineScope.SetVariable("FLAG_LEVEL_1",          TmFlags.LevelA);
       _engineScope.SetVariable("FLAG_LEVEL_2",          TmFlags.LevelB);
       _engineScope.SetVariable("FLAG_LEVEL_3",          TmFlags.LevelC);
