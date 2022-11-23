@@ -27,11 +27,23 @@ namespace Iface.Oik.ScriptEngine.Workers
       _engineScope.SetVariable("AllowTelecontrol",      new Action(AllowTelecontrol));
       _engineScope.SetVariable("TM",                    new Func<string, float>(GetExpressionResultFloat));
       _engineScope.SetVariable("GetTmStatus",           new Func<int, int, int, int>(GetTmStatus));
+      _engineScope.SetVariable("IsTmStatusOn",          new Func<int, int, int, bool>(IsTmStatusOn));
+      _engineScope.SetVariable("IsTmStatusFlagRaised",  new Func<int, int, int, TmFlags, bool>(IsTmStatusFlagRaised));
       _engineScope.SetVariable("GetTmAnalog",           new Func<int, int, int, float>(GetTmAnalog));
+      _engineScope.SetVariable("IsTmAnalogFlagRaised",  new Func<int, int, int, TmFlags, bool>(IsTmAnalogFlagRaised));
       _engineScope.SetVariable("SetTmStatus",           new Action<int, int, int, int>(SetTmStatus));
       _engineScope.SetVariable("SetTmAnalog",           new Action<int, int, int, float>(SetTmAnalog));
-      _engineScope.SetVariable("IsTmStatusOn",          new Func<int, int, int, bool>(IsTmStatusOn));
       _engineScope.SetVariable("Telecontrol",           new Action<int, int, int, int>(Telecontrol));
+      _engineScope.SetVariable("FLAG_UNRELIABLE",       TmFlags.Unreliable);
+      _engineScope.SetVariable("FLAG_INVALID",          TmFlags.Invalid);
+      _engineScope.SetVariable("FLAG_ABNORMAL",         TmFlags.Abnormal);
+      _engineScope.SetVariable("FLAG_MANUALLY_BLOCKED", TmFlags.ManuallyBlocked);
+      _engineScope.SetVariable("FLAG_MANUALLY_SET",     TmFlags.ManuallyBlocked);
+      _engineScope.SetVariable("FLAG_LEVEL_1",          TmFlags.LevelA);
+      _engineScope.SetVariable("FLAG_LEVEL_2",          TmFlags.LevelB);
+      _engineScope.SetVariable("FLAG_LEVEL_3",          TmFlags.LevelC);
+      _engineScope.SetVariable("FLAG_LEVEL_4",          TmFlags.LevelD);
+      _engineScope.SetVariable("FLAG_UNACKED",          TmFlags.Unacked);
     }
 
 

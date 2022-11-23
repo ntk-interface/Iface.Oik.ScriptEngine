@@ -102,6 +102,14 @@ namespace Iface.Oik.ScriptEngine
     }
 
 
+    protected bool IsTmStatusFlagRaised(int ch, int rtu, int point, TmFlags flag)
+    {
+      var tmStatus = new TmStatus(ch, rtu, point);
+      _api.UpdateStatus(tmStatus).Wait();
+      return tmStatus.HasFlag(flag);
+    }
+
+
     public int GetTmStatus(int ch, int rtu, int point)
     {
       return _api.GetStatus(ch, rtu, point).GetAwaiter().GetResult();
@@ -123,6 +131,14 @@ namespace Iface.Oik.ScriptEngine
     public float GetTmAnalog(TmAddr addr)
     {
       return GetTmAnalog(addr.Ch, addr.Rtu, addr.Point);
+    }
+
+
+    protected bool IsTmAnalogFlagRaised(int ch, int rtu, int point, TmFlags flag)
+    {
+      var tmAnalog = new TmAnalog(ch, rtu, point);
+      _api.UpdateAnalog(tmAnalog).Wait();
+      return tmAnalog.HasFlag(flag);
     }
 
 
