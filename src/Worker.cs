@@ -156,7 +156,7 @@ namespace Iface.Oik.ScriptEngine
 
     public void RaiseTmStatusFlag(int ch, int rtu, int point, TmFlags flags)
     {
-      _api.SetTagFlags(new TmStatus(ch, rtu, point), flags);
+      _api.SetTagFlagsExplicitly(new TmStatus(ch, rtu, point), flags);
     }
 
 
@@ -168,7 +168,7 @@ namespace Iface.Oik.ScriptEngine
 
     public void ClearTmStatusFlag(int ch, int rtu, int point, TmFlags flags)
     {
-      _api.ClearTagFlags(new TmStatus(ch, rtu, point), flags);
+      _api.ClearTagFlagsExplicitly(new TmStatus(ch, rtu, point), flags);
     }
 
 
@@ -192,7 +192,7 @@ namespace Iface.Oik.ScriptEngine
 
     public void RaiseTmAnalogFlag(int ch, int rtu, int point, TmFlags flags)
     {
-      _api.SetTagFlags(new TmAnalog(ch, rtu, point), flags);
+      _api.SetTagFlagsExplicitly(new TmAnalog(ch, rtu, point), flags);
     }
 
 
@@ -204,7 +204,7 @@ namespace Iface.Oik.ScriptEngine
 
     public void ClearTmAnalogFlag(int ch, int rtu, int point, TmFlags flags)
     {
-      _api.ClearTagFlags(new TmAnalog(ch, rtu, point), flags);
+      _api.ClearTagFlagsExplicitly(new TmAnalog(ch, rtu, point), flags);
     }
 
 
