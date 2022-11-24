@@ -122,6 +122,14 @@ namespace Iface.Oik.ScriptEngine
     }
 
 
+    public float GetTmStatusFromRetro(int ch, int rtu, int point, long timestamp)
+    {
+      var time = DateUtil.GetDateTimeFromTimestamp(timestamp);
+      
+      return _api.GetStatusFromRetro(ch, rtu, point, time).GetAwaiter().GetResult();
+    }
+
+
     public float GetTmAnalog(int ch, int rtu, int point)
     {
       return _api.GetAnalog(ch, rtu, point).GetAwaiter().GetResult();
@@ -131,6 +139,14 @@ namespace Iface.Oik.ScriptEngine
     public float GetTmAnalog(TmAddr addr)
     {
       return GetTmAnalog(addr.Ch, addr.Rtu, addr.Point);
+    }
+
+
+    public float GetTmAnalogFromRetro(int ch, int rtu, int point, long timestamp, int? retroNum)
+    {
+      var time = DateUtil.GetDateTimeFromTimestamp(timestamp);
+      
+      return _api.GetAnalogFromRetro(ch, rtu, point, time, retroNum ?? 0).GetAwaiter().GetResult();
     }
 
 

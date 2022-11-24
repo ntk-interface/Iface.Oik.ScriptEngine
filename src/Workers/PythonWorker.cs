@@ -27,9 +27,11 @@ namespace Iface.Oik.ScriptEngine.Workers
       _engineScope.SetVariable("AllowTelecontrol",      new Action(AllowTelecontrol));
       _engineScope.SetVariable("TM",                    new Func<string, float>(GetExpressionResultFloat));
       _engineScope.SetVariable("GetTmStatus",           new Func<int, int, int, int>(GetTmStatus));
+      _engineScope.SetVariable("GetTmStatusFromRetro",  new Func<int, int, int, long, float>(GetTmStatusFromRetro));
       _engineScope.SetVariable("IsTmStatusOn",          new Func<int, int, int, bool>(IsTmStatusOn));
       _engineScope.SetVariable("IsTmStatusFlagRaised",  new Func<int, int, int, TmFlags, bool>(IsTmStatusFlagRaised));
       _engineScope.SetVariable("GetTmAnalog",           new Func<int, int, int, float>(GetTmAnalog));
+      _engineScope.SetVariable("GetTmAnalogFromRetro",  new Func<int, int, int, long, int?, float>(GetTmAnalogFromRetro));
       _engineScope.SetVariable("IsTmAnalogFlagRaised",  new Func<int, int, int, TmFlags, bool>(IsTmAnalogFlagRaised));
       _engineScope.SetVariable("SetTmStatus",           new Action<int, int, int, int>(SetTmStatus));
       _engineScope.SetVariable("RaiseTmStatusFlag",     new Action<int, int, int, TmFlags>(RaiseTmStatusFlag));
