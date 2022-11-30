@@ -49,7 +49,7 @@ namespace Iface.Oik.ScriptEngine
         {
           ApplicationName = ApplicationName,
           TmServer        = commandLineArgs.ElementAtOrDefault(1) ?? "TMS",
-          Host            = commandLineArgs.ElementAtOrDefault(2) ?? "127.0.0.1",
+          Host            = commandLineArgs.ElementAtOrDefault(2) ?? ".",
           User            = commandLineArgs.ElementAtOrDefault(3) ?? "",
           Password        = commandLineArgs.ElementAtOrDefault(4) ?? "",
         });
