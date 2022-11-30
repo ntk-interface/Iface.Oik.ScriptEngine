@@ -102,6 +102,14 @@ namespace Iface.Oik.ScriptEngine
     }
 
 
+    protected bool IsTmStatusFlagRaised(int ch, int rtu, int point, TmFlags flag)
+    {
+      var tmStatus = new TmStatus(ch, rtu, point);
+      _api.UpdateStatus(tmStatus).Wait();
+      return tmStatus.HasFlag(flag);
+    }
+
+
     public int GetTmStatus(int ch, int rtu, int point)
     {
       return _api.GetStatus(ch, rtu, point).GetAwaiter().GetResult();
@@ -111,6 +119,14 @@ namespace Iface.Oik.ScriptEngine
     public int GetTmStatus(TmAddr addr)
     {
       return GetTmStatus(addr.Ch, addr.Rtu, addr.Point);
+    }
+
+
+    public float GetTmStatusFromRetro(int ch, int rtu, int point, long timestamp)
+    {
+      var time = DateUtil.GetDateTimeFromTimestamp(timestamp);
+      
+      return _api.GetStatusFromRetro(ch, rtu, point, time).GetAwaiter().GetResult();
     }
 
 
@@ -126,6 +142,22 @@ namespace Iface.Oik.ScriptEngine
     }
 
 
+    public float GetTmAnalogFromRetro(int ch, int rtu, int point, long timestamp, int? retroNum)
+    {
+      var time = DateUtil.GetDateTimeFromTimestamp(timestamp);
+      
+      return _api.GetAnalogFromRetro(ch, rtu, point, time, retroNum ?? 0).GetAwaiter().GetResult();
+    }
+
+
+    protected bool IsTmAnalogFlagRaised(int ch, int rtu, int point, TmFlags flag)
+    {
+      var tmAnalog = new TmAnalog(ch, rtu, point);
+      _api.UpdateAnalog(tmAnalog).Wait();
+      return tmAnalog.HasFlag(flag);
+    }
+
+
     public void SetTmStatus(int ch, int rtu, int point, int status)
     {
       _api.SetStatus(ch, rtu, point, status).Wait();
@@ -135,6 +167,30 @@ namespace Iface.Oik.ScriptEngine
     public void SetTmStatus(TmAddr addr, int status)
     {
       SetTmStatus(addr.Ch, addr.Rtu, addr.Point, status);
+    }
+
+
+    public void RaiseTmStatusFlag(int ch, int rtu, int point, TmFlags flags)
+    {
+      _api.SetTagFlagsExplicitly(new TmStatus(ch, rtu, point), flags);
+    }
+
+
+    public void RaiseTmStatusFlag(TmAddr addr, TmFlags flags)
+    {
+      RaiseTmStatusFlag(addr.Ch, addr.Rtu, addr.Point, flags);
+    }
+
+
+    public void ClearTmStatusFlag(int ch, int rtu, int point, TmFlags flags)
+    {
+      _api.ClearTagFlagsExplicitly(new TmStatus(ch, rtu, point), flags);
+    }
+
+
+    public void ClearTmStatusFlag(TmAddr addr, TmFlags flags)
+    {
+      ClearTmStatusFlag(addr.Ch, addr.Rtu, addr.Point, flags);
     }
 
 
@@ -150,33 +206,43 @@ namespace Iface.Oik.ScriptEngine
     }
 
 
-    public void SetTmStatusFlags(int ch, int rtu, int point, TmFlags flags)
+    public void RaiseTmAnalogFlag(int ch, int rtu, int point, TmFlags flags)
     {
-      _api.SetTagFlags(new TmStatus(ch, rtu, point), flags);
+      _api.SetTagFlagsExplicitly(new TmAnalog(ch, rtu, point), flags);
     }
 
 
-    public void SetTmStatusFlags(TmAddr addr, TmFlags flags)
+    public void RaiseTmAnalogFlag(TmAddr addr, TmFlags flags)
     {
-      SetTmStatusFlags(addr.Ch, addr.Rtu, addr.Point, flags);
+      RaiseTmAnalogFlag(addr.Ch, addr.Rtu, addr.Point, flags);
     }
 
 
-    public void SetTmAnalogFlags(int ch, int rtu, int point, TmFlags flags)
+    public void ClearTmAnalogFlag(int ch, int rtu, int point, TmFlags flags)
     {
-      _api.SetTagFlags(new TmAnalog(ch, rtu, point), flags);
+      _api.ClearTagFlagsExplicitly(new TmAnalog(ch, rtu, point), flags);
     }
 
 
-    public void SetTmAnalogFlags(TmAddr addr, TmFlags flags)
+    public void ClearTmAnalogFlag(TmAddr addr, TmFlags flags)
     {
-      SetTmAnalogFlags(addr.Ch, addr.Rtu, addr.Point, flags);
+      ClearTmAnalogFlag(addr.Ch, addr.Rtu, addr.Point, flags);
     }
 
 
     public string GetExpressionResult(string expression)
     {
       return _api.GetExpressionResult(expression).GetAwaiter().GetResult();
+    }
+
+
+    public float GetExpressionResultFloat(string expression)
+    {
+      if (!TryGetExpressionResult(expression, out var value))
+      {
+        throw new Exception("Ошибка функции TM");
+      }
+      return value;
     }
 
 

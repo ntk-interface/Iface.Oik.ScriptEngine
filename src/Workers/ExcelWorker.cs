@@ -166,7 +166,7 @@ namespace Iface.Oik.ScriptEngine.Workers
       catch (Exception)
       {
         LogDebug($"Из-за некорректного значения ячейки {cell.Address} телепараметр {addr} станет недостоверным");
-        SetTmStatusFlags(addr, TmFlags.Unreliable);
+        RaiseTmStatusFlag(addr, TmFlags.Unreliable);
         return false;
       }
     }
@@ -182,7 +182,7 @@ namespace Iface.Oik.ScriptEngine.Workers
       catch (Exception)
       {
         LogDebug($"Из-за некорректного значения ячейки {cell.Address} телепараметр {addr} станет недостоверным");
-        SetTmAnalogFlags(addr, TmFlags.Unreliable);
+        RaiseTmAnalogFlag(addr, TmFlags.Unreliable);
         return false;
       }
     }

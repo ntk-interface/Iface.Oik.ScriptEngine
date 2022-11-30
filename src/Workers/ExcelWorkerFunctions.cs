@@ -160,7 +160,7 @@ namespace Iface.Oik.ScriptEngine.Workers
         {
           _worker.LogDebug(
             $"Из-за некорректного значения ячейки {context.Scopes.Current.Address} телепараметр {addr} станет недостоверным");
-          _worker.SetTmAnalogFlags(addr, TmFlags.Unreliable);
+          _worker.RaiseTmAnalogFlag(addr, TmFlags.Unreliable);
           return CreateResult(false, DataType.Boolean);
         }
       }
@@ -198,7 +198,7 @@ namespace Iface.Oik.ScriptEngine.Workers
         {
           _worker.LogDebug(
             $"Из-за некорректного значения ячейки {context.Scopes.Current.Address} телепараметр {addr} станет недостоверным");
-          _worker.SetTmStatusFlags(addr, TmFlags.Unreliable);
+          _worker.RaiseTmStatusFlag(addr, TmFlags.Unreliable);
           return CreateResult(false, DataType.Boolean);
         }
       }
