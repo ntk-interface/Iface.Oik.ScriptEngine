@@ -40,6 +40,7 @@ namespace Iface.Oik.ScriptEngine.Workers
       _engineScope.SetVariable("RaiseTmAnalogFlag",     new Action<int, int, int, TmFlags>(RaiseTmAnalogFlag));
       _engineScope.SetVariable("ClearTmAnalogFlag",     new Action<int, int, int, TmFlags>(ClearTmAnalogFlag));
       _engineScope.SetVariable("Telecontrol",           new Action<int, int, int, int>(Telecontrol));
+      _engineScope.SetVariable("LogDebug",              new Action<string>(LogDebug));
       _engineScope.SetVariable("TmFlagUnreliable",      TmFlags.Unreliable);
       _engineScope.SetVariable("TmFlagInvalid",         TmFlags.Invalid);
       _engineScope.SetVariable("TmFlagAbnormal",        (int)TmFlags.Abnormal);

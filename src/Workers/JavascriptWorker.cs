@@ -35,16 +35,17 @@ namespace Iface.Oik.ScriptEngine.Workers
              .SetValue("RaiseTmAnalogFlag",     new Action<int, int, int, TmFlags>(RaiseTmAnalogFlag))
              .SetValue("ClearTmAnalogFlag",     new Action<int, int, int, TmFlags>(ClearTmAnalogFlag))
              .SetValue("Telecontrol",           new Action<int, int, int, int>(Telecontrol))
-             .SetValue("TmFlagUnreliable",       (int)TmFlags.Unreliable)
-             .SetValue("TmFlagInvalid",          (int)TmFlags.Invalid)
-             .SetValue("TmFlagAbnormal",         (int)TmFlags.Abnormal)
+             .SetValue("LogDebug",              new Action<string>(LogDebug))
+             .SetValue("TmFlagUnreliable",      (int)TmFlags.Unreliable)
+             .SetValue("TmFlagInvalid",         (int)TmFlags.Invalid)
+             .SetValue("TmFlagAbnormal",        (int)TmFlags.Abnormal)
              .SetValue("TmFlagManuallyBlocked", (int)TmFlags.ManuallyBlocked)
              .SetValue("TmFlagManuallySet",     (int)TmFlags.ManuallySet)
              .SetValue("TmFlagLevel1",          (int)TmFlags.LevelA)
              .SetValue("TmFlagLevel2",          (int)TmFlags.LevelB)
              .SetValue("TmFlagLevel3",          (int)TmFlags.LevelC)
              .SetValue("TmFlagLevel4",          (int)TmFlags.LevelD)
-             .SetValue("TmFlagUnacked",          (int)TmFlags.Unacked)
+             .SetValue("TmFlagUnacked",         (int)TmFlags.Unacked)
         ;
     }
 
