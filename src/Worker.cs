@@ -123,7 +123,7 @@ namespace Iface.Oik.ScriptEngine
     }
 
 
-    public float GetTmStatusFromRetro(int ch, int rtu, int point, long timestamp)
+    public int GetTmStatusFromRetro(int ch, int rtu, int point, long timestamp)
     {
       var time = DateUtil.GetDateTimeFromTimestamp(timestamp);
 

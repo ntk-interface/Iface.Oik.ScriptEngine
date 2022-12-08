@@ -24,7 +24,7 @@ namespace Iface.Oik.ScriptEngine.Workers
              .SetValue("GetTmStatus",            new Func<int, int, int, int>(GetTmStatus))
              .SetValue("IsTmStatusOn",           new Func<int, int, int, bool>(IsTmStatusOn))
              .SetValue("IsTmStatusFlagRaised",   new Func<int, int, int, TmFlags, bool>(IsTmStatusFlagRaised))
-             .SetValue("GetTmStatusFromRetro",   new Func<int, int, int, long, float>(GetTmStatusFromRetro))
+             .SetValue("GetTmStatusFromRetro",   new Func<int, int, int, long, int>(GetTmStatusFromRetro))
              .SetValue("GetTmAnalog",            new Func<int, int, int, float>(GetTmAnalog))
              .SetValue("IsTmAnalogFlagRaised",   new Func<int, int, int, TmFlags, bool>(IsTmAnalogFlagRaised))
              .SetValue("GetTmAnalogFromRetro",   new Func<int, int, int, long, int?, float>(GetTmAnalogFromRetro))
