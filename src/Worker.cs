@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Iface.Oik.Tm.Helpers;
@@ -125,7 +126,7 @@ namespace Iface.Oik.ScriptEngine
     public float GetTmStatusFromRetro(int ch, int rtu, int point, long timestamp)
     {
       var time = DateUtil.GetDateTimeFromTimestamp(timestamp);
-      
+
       return _api.GetStatusFromRetro(ch, rtu, point, time).GetAwaiter().GetResult();
     }
 
@@ -145,8 +146,19 @@ namespace Iface.Oik.ScriptEngine
     public float GetTmAnalogFromRetro(int ch, int rtu, int point, long timestamp, int? retroNum)
     {
       var time = DateUtil.GetDateTimeFromTimestamp(timestamp);
-      
+
       return _api.GetAnalogFromRetro(ch, rtu, point, time, retroNum ?? 0).GetAwaiter().GetResult();
+    }
+
+
+    public float[] GetTmAnalogMicroSeries(int ch, int rtu, int point)
+    {
+      var microSeries = _api.GetAnalogsMicroSeries(new[] { new TmAnalog(ch, rtu, point) }).GetAwaiter().GetResult();
+
+      return microSeries?.FirstOrDefault()
+                        ?.Select(ms => ms.Value)
+                        .ToArray()
+             ?? Array.Empty<float>();
     }
 
 

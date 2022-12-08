@@ -32,6 +32,7 @@ namespace Iface.Oik.ScriptEngine.Workers
       _engineScope.SetVariable("IsTmStatusFlagRaised",  new Func<int, int, int, TmFlags, bool>(IsTmStatusFlagRaised));
       _engineScope.SetVariable("GetTmAnalog",           new Func<int, int, int, float>(GetTmAnalog));
       _engineScope.SetVariable("GetTmAnalogFromRetro",  new Func<int, int, int, long, int?, float>(GetTmAnalogFromRetro));
+      _engineScope.SetVariable("GetTmAnalogMicroSeries", new Func<int, int, int, float[]>(GetTmAnalogMicroSeries));
       _engineScope.SetVariable("IsTmAnalogFlagRaised",  new Func<int, int, int, TmFlags, bool>(IsTmAnalogFlagRaised));
       _engineScope.SetVariable("SetTmStatus",           new Action<int, int, int, int>(SetTmStatus));
       _engineScope.SetVariable("RaiseTmStatusFlag",     new Action<int, int, int, TmFlags>(RaiseTmStatusFlag));
