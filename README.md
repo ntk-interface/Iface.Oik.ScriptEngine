@@ -57,9 +57,9 @@ bool IsTmAnalogFlagRaised(int ch, int rtu, int point, TmFlags flag)
 ```
 
 ```
-float GetTmAnalogFromRetro(int ch, int rtu, int point, long timestamp)
+float GetTmAnalogFromRetro(int ch, int rtu, int point, long timestamp, int? retroNum)
 
-Возвращает значение измерения с адресом "ch":"rtu":"point" (канал:кп:объект) из ретроспективы в момент времени "timestamp" (время в секундах, начиная с 1 января 1970)
+Возвращает значение измерения с адресом "ch":"rtu":"point" (канал:кп:объект) из ретроспективы с номером "retroNum" (можно указать 0, чтобы сервер сам выбрал подходящую ретроспективу) в момент времени "timestamp" (время в секундах, начиная с 1 января 1970)
 ```
 
 ```
