@@ -114,8 +114,6 @@ void ClearTmStatusFlag(int ch, int rtu, int point, TmFlags flag)
 void SetTmAnalog(int ch, int rtu, int point, float value)
 
 Устанавливает значение "value" измерения с адресом "ch":"rtu":"point" (канал:кп:объект)
-
-Не допускается воздействие на флаги "TmFlagLevel1".."TmFlagLevel4"
 ```
 
 ```
@@ -130,6 +128,8 @@ void RaiseTmAnalogFlag(int ch, int rtu, int point, TmFlags flag)
 void ClearTmAnalogFlag(int ch, int rtu, int point, TmFlags flag)
 
 Снимает флаг "flag" (см. ниже список флагов) измерения с адресом "ch":"rtu":"point" (канал:кп:объект)
+
+Не допускается воздействие на флаги "TmFlagLevel1".."TmFlagLevel4"
 ```
 
 
