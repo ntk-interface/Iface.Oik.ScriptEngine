@@ -98,24 +98,32 @@ void SetTmStatus(int ch, int rtu, int point, int status)
 void RaiseTmStatusFlag(int ch, int rtu, int point, TmFlags flag)
 
 Взводит флаг "flag" (см. ниже список флагов) сигнала с адресом "ch":"rtu":"point" (канал:кп:объект)
+
+Не допускается воздействие на флаг "TmStatusAbnormal" 
 ```
 
 ```
 void ClearTmStatusFlag(int ch, int rtu, int point, TmFlags flag)
 
 Снимает флаг "flag" (см. ниже список флагов) сигнала с адресом "ch":"rtu":"point" (канал:кп:объект)
+
+Не допускается воздействие на флаги "TmFlagLevel1".."TmFlagLevel4"
 ```
 
 ```
 void SetTmAnalog(int ch, int rtu, int point, float value)
 
 Устанавливает значение "value" измерения с адресом "ch":"rtu":"point" (канал:кп:объект)
+
+Не допускается воздействие на флаги "TmFlagLevel1".."TmFlagLevel4"
 ```
 
 ```
 void RaiseTmAnalogFlag(int ch, int rtu, int point, TmFlags flag)
 
 Взводит флаг "flag" (см. ниже список флагов) измерения с адресом "ch":"rtu":"point" (канал:кп:объект)
+
+Не допускается воздействие на флаги "TmStatusAbnormal" 
 ```
 
 ```
