@@ -28,6 +28,9 @@ namespace Iface.Oik.ScriptEngine.Workers
              .SetValue("GetTmAnalog",            new Func<int, int, int, float>(GetTmAnalog))
              .SetValue("IsTmAnalogFlagRaised",   new Func<int, int, int, TmFlags, bool>(IsTmAnalogFlagRaised))
              .SetValue("GetTmAnalogFromRetro",   new Func<int, int, int, long, int?, float>(GetTmAnalogFromRetro))
+             .SetValue("GetTmAnalogRetro",       new Func<int, int, int, long, long, int, int?, float[]>(GetTmAnalogRetro))
+             .SetValue("GetTmAnalogImpulseArchiveAverage", 
+                       new Func<int, int, int, long, long, int, float[]>(GetTmAnalogImpulseArchiveAverage))
              .SetValue("GetTmAnalogMicroSeries", new Func<int, int, int, float[]>(GetTmAnalogMicroSeries))
              .SetValue("SetTmStatus",            new Action<int, int, int, int>(SetTmStatus))
              .SetValue("RaiseTmStatusFlag",      new Action<int, int, int, TmFlags>(RaiseTmStatusFlag))

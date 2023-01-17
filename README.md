@@ -63,6 +63,18 @@ float GetTmAnalogFromRetro(int ch, int rtu, int point, long timestamp, int? retr
 ```
 
 ```
+float[] GetTmAnalogRetro(int ch, int rtu, int point, long startTimestamp, long endTimestamp, int step, int? retroNum)
+
+Возвращает массив значений измерения с адресом "ch":"rtu":"point" (канал:кп:объект) из ретроспективы с номером "retroNum" (можно указать 0, чтобы сервер сам выбрал подходящую ретроспективу), с момента времени "startTimestamp" (время в секундах, начиная с 1 января 1970) до "endTimestamp" с шагом "step" (в секундах). Если значений нет, массив будет пустым.
+```
+
+```
+float[] GetTmAnalogImpulseArchiveAverage(int ch, int rtu, int point, long startTimestamp, long endTimestamp, int step)
+
+Возвращает массив значений измерения с адресом "ch":"rtu":"point" (канал:кп:объект) из средних значений импульс-архива, с момента времени "startTimestamp" (время в секундах, начиная с 1 января 1970) до "endTimestamp" с шагом "step" (в секундах). Если значений нет, массив будет пустым.
+```
+
+```
 float[] GetTmAnalogMicroSeries(int ch, int rtu, int point)
 
 Возвращает массив значений измерения с адресом "ch":"rtu":"point" (канал:кп:объект) из микросерий (последние значения ежесекундно, не более десяти значений). Только для сервера 3.Х. Если значений нет, массив будет пустым.

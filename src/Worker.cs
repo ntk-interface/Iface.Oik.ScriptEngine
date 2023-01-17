@@ -151,13 +151,45 @@ namespace Iface.Oik.ScriptEngine
     }
 
 
+    public float[] GetTmAnalogRetro(int  ch,
+                                    int  rtu,
+                                    int  point,
+                                    long startTimestamp,
+                                    long endTimestamp,
+                                    int  step,
+                                    int? retroNum)
+    {
+      var retro = _api.GetAnalogRetro(new TmAnalog(ch, rtu, point),
+                                      new TmAnalogRetroFilter(startTimestamp, endTimestamp, step),
+                                      retroNum ?? 0)
+                      .GetAwaiter().GetResult();
+
+      return retro?.Select(ms => ms.Value).ToArray()
+             ?? Array.Empty<float>();
+    }
+
+
+    public float[] GetTmAnalogImpulseArchiveAverage(int  ch,
+                                                    int  rtu,
+                                                    int  point,
+                                                    long startTimestamp,
+                                                    long endTimestamp,
+                                                    int  step)
+    {
+      var impulseArchive = _api.GetImpulseArchiveAverage(new TmAnalog(ch, rtu, point),
+                                                         new TmAnalogRetroFilter(startTimestamp, endTimestamp, step))
+                               .GetAwaiter().GetResult();
+
+      return impulseArchive?.Select(ms => ms.Value).ToArray()
+             ?? Array.Empty<float>();
+    }
+
+
     public float[] GetTmAnalogMicroSeries(int ch, int rtu, int point)
     {
       var microSeries = _api.GetAnalogsMicroSeries(new[] { new TmAnalog(ch, rtu, point) }).GetAwaiter().GetResult();
 
-      return microSeries?.FirstOrDefault()
-                        ?.Select(ms => ms.Value)
-                        .ToArray()
+      return microSeries?.FirstOrDefault()?.Select(ms => ms.Value).ToArray()
              ?? Array.Empty<float>();
     }
 
