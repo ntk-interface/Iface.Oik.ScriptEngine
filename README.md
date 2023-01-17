@@ -107,7 +107,7 @@ void ClearTmStatusFlag(int ch, int rtu, int point, TmFlags flag)
 
 Снимает флаг "flag" (см. ниже список флагов) сигнала с адресом "ch":"rtu":"point" (канал:кп:объект)
 
-Не допускается воздействие на флаги "TmFlagLevel1".."TmFlagLevel4"
+Не допускается воздействие на флаг "TmStatusAbnormal" 
 ```
 
 ```
@@ -121,7 +121,7 @@ void RaiseTmAnalogFlag(int ch, int rtu, int point, TmFlags flag)
 
 Взводит флаг "flag" (см. ниже список флагов) измерения с адресом "ch":"rtu":"point" (канал:кп:объект)
 
-Не допускается воздействие на флаги "TmStatusAbnormal" 
+Не допускается воздействие на флаги "TmFlagLevel1".."TmFlagLevel4"
 ```
 
 ```
