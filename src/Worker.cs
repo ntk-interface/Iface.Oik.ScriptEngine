@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -21,6 +22,8 @@ namespace Iface.Oik.ScriptEngine
     private int  _scriptTimeout = 2000;
     private bool _isScriptTimeoutOverriden;
     private bool _isTelecontrolAllowed;
+
+    private readonly Dictionary<string, object> _storage = new();
 
 
     protected abstract void DoWork();
@@ -299,6 +302,18 @@ namespace Iface.Oik.ScriptEngine
         return false;
       }
       return true;
+    }
+
+
+    public void SetToStorage(string key, object value)
+    {
+      _storage[key] = value;
+    }
+
+
+    public object GetFromStorage(string key)
+    {
+      return _storage.TryGetValue(key, out var value) ? value : null;
     }
 
 

@@ -39,6 +39,8 @@ namespace Iface.Oik.ScriptEngine.Workers
              .SetValue("RaiseTmAnalogFlag",      new Action<int, int, int, TmFlags>(RaiseTmAnalogFlag))
              .SetValue("ClearTmAnalogFlag",      new Action<int, int, int, TmFlags>(ClearTmAnalogFlag))
              .SetValue("Telecontrol",            new Action<int, int, int, int>(Telecontrol))
+             .SetValue("SetToStorage",           new Action<string, object>(SetToStorage))
+             .SetValue("GetFromStorage",         new Func<string, object>(GetFromStorage))
              .SetValue("LogDebug",               new Action<string>(LogDebug))
              .SetValue("TmFlagUnreliable",       (int)TmFlags.Unreliable)
              .SetValue("TmFlagInvalid",          (int)TmFlags.Invalid)
