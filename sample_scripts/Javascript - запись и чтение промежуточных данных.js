@@ -1,5 +1,5 @@
 // Получаем значение из предыдущего выполнения
-var previousValue = GetFromStorage('prev');
+var previousValue = ReadFromStorage('prev');
 
 // Получаем текущее значение
 var value = GetTmAnalog(20, 1, 1);
@@ -13,4 +13,4 @@ if (previousValue !== null) {
 }
 
 // Сохраняем значение для следующего выполнения
-SetToStorage('prev', value);
+WriteToStorage('prev', value);

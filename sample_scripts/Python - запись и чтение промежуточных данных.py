@@ -1,5 +1,5 @@
 # Получаем значение из предыдущего выполнения
-previousValue = GetFromStorage("prev")
+previousValue = ReadFromStorage("prev")
 
 # Получаем текущее значение
 value = GetTmAnalog(20, 1, 1)
@@ -11,4 +11,4 @@ if (previousValue is not None):
         SetTmStatus(24, 1, 1, 1)
 
 # Сохраняем значение для следующего выполнения
-SetToStorage("prev", value)
+WriteToStorage("prev", value)

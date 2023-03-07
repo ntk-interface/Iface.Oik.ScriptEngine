@@ -43,8 +43,8 @@ namespace Iface.Oik.ScriptEngine.Workers
       _engineScope.SetVariable("RaiseTmAnalogFlag",     new Action<int, int, int, TmFlags>(RaiseTmAnalogFlag));
       _engineScope.SetVariable("ClearTmAnalogFlag",     new Action<int, int, int, TmFlags>(ClearTmAnalogFlag));
       _engineScope.SetVariable("Telecontrol",           new Action<int, int, int, int>(Telecontrol));
-      _engineScope.SetVariable("SetToStorage",          new Action<string, object>(SetToStorage));
-      _engineScope.SetVariable("GetFromStorage",        new Func<string, object>(GetFromStorage));
+      _engineScope.SetVariable("WriteToStorage",        new Action<string, object>(WriteToStorage));
+      _engineScope.SetVariable("ReadFromStorage",       new Func<string, object>(ReadFromStorage));
       _engineScope.SetVariable("LogDebug",              new Action<string>(LogDebug));
       _engineScope.SetVariable("TmFlagUnreliable",      TmFlags.Unreliable);
       _engineScope.SetVariable("TmFlagInvalid",         TmFlags.Invalid);

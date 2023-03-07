@@ -305,13 +305,13 @@ namespace Iface.Oik.ScriptEngine
     }
 
 
-    public void SetToStorage(string key, object value)
+    public void WriteToStorage(string key, object value)
     {
       _storage[key] = value;
     }
 
 
-    public object GetFromStorage(string key)
+    public object ReadFromStorage(string key)
     {
       return _storage.TryGetValue(key, out var value) ? value : null;
     }
