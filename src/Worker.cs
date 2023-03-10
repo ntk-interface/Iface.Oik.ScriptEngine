@@ -100,6 +100,98 @@ namespace Iface.Oik.ScriptEngine
     }
 
 
+    public void TeleregulateByStepUp(int ch, int rtu, int point)
+    {
+      var tmAnalog = new TmAnalog(ch, rtu, point);
+
+      if (!_isTelecontrolAllowed)
+      {
+        Tms.PrintDebug($"Не подана команда регулирования на {tmAnalog.TmAddr} - в скрипте не разрешены команды");
+        return;
+      }
+      _api.UpdateAnalog(tmAnalog).Wait();
+      _api.UpdateTagPropertiesAndClassData(tmAnalog).Wait();
+      var result = _api.TeleregulateByStepUp(tmAnalog).ConfigureAwait(false).GetAwaiter().GetResult();
+      if (result == TmTelecontrolResult.Success)
+      {
+        Tms.PrintDebug($"Выполнена команда регулирования на {tmAnalog.TmAddr}");
+      }
+      else
+      {
+        Tms.PrintDebug($"Ошибка команды регулирования на {tmAnalog.TmAddr} - {result.GetDescription()}");
+      }
+    }
+
+
+    public void TeleregulateByStepDown(int ch, int rtu, int point)
+    {
+      var tmAnalog = new TmAnalog(ch, rtu, point);
+
+      if (!_isTelecontrolAllowed)
+      {
+        Tms.PrintDebug($"Не подана команда регулирования на {tmAnalog.TmAddr} - в скрипте не разрешены команды");
+        return;
+      }
+      _api.UpdateAnalog(tmAnalog).Wait();
+      _api.UpdateTagPropertiesAndClassData(tmAnalog).Wait();
+      var result = _api.TeleregulateByStepDown(tmAnalog).ConfigureAwait(false).GetAwaiter().GetResult();
+      if (result == TmTelecontrolResult.Success)
+      {
+        Tms.PrintDebug($"Выполнена команда регулирования на {tmAnalog.TmAddr}");
+      }
+      else
+      {
+        Tms.PrintDebug($"Ошибка команды регулирования на {tmAnalog.TmAddr} - {result.GetDescription()}");
+      }
+    }
+
+
+    public void TeleregulateByCode(int ch, int rtu, int point, int code)
+    {
+      var tmAnalog = new TmAnalog(ch, rtu, point);
+
+      if (!_isTelecontrolAllowed)
+      {
+        Tms.PrintDebug($"Не подана команда регулирования на {tmAnalog.TmAddr} - в скрипте не разрешены команды");
+        return;
+      }
+      _api.UpdateAnalog(tmAnalog).Wait();
+      _api.UpdateTagPropertiesAndClassData(tmAnalog).Wait();
+      var result = _api.TeleregulateByCode(tmAnalog, code).ConfigureAwait(false).GetAwaiter().GetResult();
+      if (result == TmTelecontrolResult.Success)
+      {
+        Tms.PrintDebug($"Выполнена команда регулирования на {tmAnalog.TmAddr}");
+      }
+      else
+      {
+        Tms.PrintDebug($"Ошибка команды регулирования на {tmAnalog.TmAddr} - {result.GetDescription()}");
+      }
+    }
+
+
+    public void TeleregulateByValue(int ch, int rtu, int point, float value)
+    {
+      var tmAnalog = new TmAnalog(ch, rtu, point);
+
+      if (!_isTelecontrolAllowed)
+      {
+        Tms.PrintDebug($"Не подана команда регулирования на {tmAnalog.TmAddr} - в скрипте не разрешены команды");
+        return;
+      }
+      _api.UpdateAnalog(tmAnalog).Wait();
+      _api.UpdateTagPropertiesAndClassData(tmAnalog).Wait();
+      var result = _api.TeleregulateByValue(tmAnalog, value).ConfigureAwait(false).GetAwaiter().GetResult();
+      if (result == TmTelecontrolResult.Success)
+      {
+        Tms.PrintDebug($"Выполнена команда регулирования на {tmAnalog.TmAddr}");
+      }
+      else
+      {
+        Tms.PrintDebug($"Ошибка команды регулирования на {tmAnalog.TmAddr} - {result.GetDescription()}");
+      }
+    }
+
+
     public bool IsTmStatusOn(int ch, int rtu, int point)
     {
       return GetTmStatus(ch, rtu, point) > 0;
