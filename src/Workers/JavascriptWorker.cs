@@ -17,7 +17,7 @@ namespace Iface.Oik.ScriptEngine.Workers
     {
       _script = File.ReadAllText(filename);
 
-      _engine = new Engine();
+      _engine = new Engine(options => options.AllowClr());
       _engine.SetValue("OverrideScriptTimeout", new Action<int>(OverrideScriptTimeout))
              .SetValue("AllowTelecontrol",       new Action(AllowTelecontrol))
              .SetValue("TM",                     new Func<string, float>(GetExpressionResultFloat))
