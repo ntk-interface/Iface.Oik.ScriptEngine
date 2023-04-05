@@ -226,11 +226,12 @@ namespace Iface.Oik.ScriptEngine
     }
 
 
-    public int GetTmStatusFromRetro(int ch, int rtu, int point, long timestamp)
+    public int? GetTmStatusFromRetro(int ch, int rtu, int point, long timestamp)
     {
-      var time = DateUtil.GetDateTimeFromTimestamp(timestamp);
+      var time        = DateUtil.GetDateTimeFromTimestamp(timestamp);
+      var statusRetro = _api.GetStatusFromRetro(ch, rtu, point, time).GetAwaiter().GetResult();
 
-      return _api.GetStatusFromRetro(ch, rtu, point, time).GetAwaiter().GetResult();
+      return statusRetro >= 0 ? statusRetro : null;
     }
 
 
@@ -262,15 +263,16 @@ namespace Iface.Oik.ScriptEngine
     }
 
 
-    public float GetTmAnalogFromRetro(int ch, int rtu, int point, long timestamp, int? retroNum)
+    public float? GetTmAnalogFromRetro(int ch, int rtu, int point, long timestamp, int? retroNum)
     {
-      var time = DateUtil.GetDateTimeFromTimestamp(timestamp);
+      var time        = DateUtil.GetDateTimeFromTimestamp(timestamp);
+      var analogRetro = _api.GetAnalogFromRetro(ch, rtu, point, time, retroNum ?? 0).GetAwaiter().GetResult();
 
-      return _api.GetAnalogFromRetro(ch, rtu, point, time, retroNum ?? 0).GetAwaiter().GetResult();
+      return !analogRetro.IsUnreliable ? analogRetro.Value : null;
     }
 
 
-    public float[] GetTmAnalogRetro(int  ch,
+    public float?[] GetTmAnalogRetro(int  ch,
                                     int  rtu,
                                     int  point,
                                     long startTimestamp,
@@ -282,13 +284,15 @@ namespace Iface.Oik.ScriptEngine
                                       new TmAnalogRetroFilter(startTimestamp, endTimestamp, step),
                                       retroNum ?? 0)
                       .GetAwaiter().GetResult();
-
-      return retro?.Select(ms => ms.Value).ToArray()
-             ?? Array.Empty<float>();
+      if (retro == null)
+      {
+        return Array.Empty<float?>();
+      }
+      return retro.Select(ms => !ms.IsUnreliable ? ms.Value : (float?)null).ToArray();
     }
 
 
-    public float[] GetTmAnalogImpulseArchiveAverage(int  ch,
+    public float?[] GetTmAnalogImpulseArchiveAverage(int  ch,
                                                     int  rtu,
                                                     int  point,
                                                     long startTimestamp,
@@ -298,18 +302,23 @@ namespace Iface.Oik.ScriptEngine
       var impulseArchive = _api.GetImpulseArchiveAverage(new TmAnalog(ch, rtu, point),
                                                          new TmAnalogRetroFilter(startTimestamp, endTimestamp, step))
                                .GetAwaiter().GetResult();
-
-      return impulseArchive?.Select(ms => ms.Value).ToArray()
-             ?? Array.Empty<float>();
+      if (impulseArchive == null)
+      {
+        return Array.Empty<float?>();
+      }
+      return impulseArchive.Select(ms => !ms.IsUnreliable ? ms.Value : (float?)null).ToArray();
     }
 
 
-    public float[] GetTmAnalogMicroSeries(int ch, int rtu, int point)
+    public float?[] GetTmAnalogMicroSeries(int ch, int rtu, int point)
     {
       var microSeries = _api.GetAnalogsMicroSeries(new[] { new TmAnalog(ch, rtu, point) }).GetAwaiter().GetResult();
-
-      return microSeries?.FirstOrDefault()?.Select(ms => ms.Value).ToArray()
-             ?? Array.Empty<float>();
+      
+      if (microSeries == null)
+      {
+        return Array.Empty<float?>();
+      }
+      return microSeries.FirstOrDefault()?.Select(ms => !ms.IsUnreliable ? ms.Value : (float?)null).ToArray();
     }
 
 
