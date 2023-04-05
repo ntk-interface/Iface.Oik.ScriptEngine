@@ -21,6 +21,12 @@
 #### Функции для получения данных телеметрии сервера ОИК
 
 ```
+string GetTmStatusName(int ch, int rtu, int point)
+
+Возвращает наименование сигнала с адресом "ch":"rtu":"point" (канал:кп:объект)
+```
+
+```
 int GetTmStatus(int ch, int rtu, int point)
 
 Возвращает состояние сигнала с адресом "ch":"rtu":"point" (канал:кп:объект), где 0 - откл, 1 - вкл 
@@ -42,6 +48,18 @@ bool IsTmStatusFlagRaised(int ch, int rtu, int point, TmFlags flag)
 int GetTmStatusFromRetro(int ch, int rtu, int point, long timestamp)
 
 Возвращает состояние сигнала с адресом "ch":"rtu":"point" (канал:кп:объект) из ретроспективы в момент времени "timestamp" (время в секундах, начиная с 1 января 1970), где 0 - откл, 1 - вкл 
+```
+
+```
+string GetTmAnalogName(int ch, int rtu, int point)
+
+Возвращает наименование измерения с адресом "ch":"rtu":"point" (канал:кп:объект)
+```
+
+```
+string GetTmAnalogUnit(int ch, int rtu, int point)
+
+Возвращает единицу измерения (МВт, кВ и т.п.) измерения с адресом "ch":"rtu":"point" (канал:кп:объект)
 ```
 
 ```
