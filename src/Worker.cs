@@ -212,6 +212,14 @@ namespace Iface.Oik.ScriptEngine
     }
 
 
+    public string GetTmStatusName(int ch, int rtu, int point)
+    {
+      var tmStatus = new TmStatus(ch, rtu, point);
+      _api.UpdateTagPropertiesAndClassData(tmStatus).Wait();
+      return tmStatus.Name;
+    }
+
+
     public int GetTmStatus(TmAddr addr)
     {
       return GetTmStatus(addr.Ch, addr.Rtu, addr.Point);
@@ -235,6 +243,22 @@ namespace Iface.Oik.ScriptEngine
     public float GetTmAnalog(TmAddr addr)
     {
       return GetTmAnalog(addr.Ch, addr.Rtu, addr.Point);
+    }
+
+
+    public string GetTmAnalogName(int ch, int rtu, int point)
+    {
+      var tmAnalog = new TmAnalog(ch, rtu, point);
+      _api.UpdateTagPropertiesAndClassData(tmAnalog).Wait();
+      return tmAnalog.Name;
+    }
+
+
+    public string GetTmAnalogUnit(int ch, int rtu, int point)
+    {
+      var tmAnalog = new TmAnalog(ch, rtu, point);
+      _api.UpdateTagPropertiesAndClassData(tmAnalog).Wait();
+      return tmAnalog.Unit;
     }
 
 
