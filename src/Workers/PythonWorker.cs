@@ -27,11 +27,13 @@ namespace Iface.Oik.ScriptEngine.Workers
       _engineScope.SetVariable("AllowTelecontrol",      new Action(AllowTelecontrol));
       _engineScope.SetVariable("TM",                    new Func<string, float>(GetExpressionResultFloat));
       _engineScope.SetVariable("GetTmStatus",           new Func<int, int, int, int>(GetTmStatus));
+      _engineScope.SetVariable("GetTmStatusOrDefault",  new Func<int, int, int, int, int>(GetTmStatusOrDefault));
       _engineScope.SetVariable("GetTmStatusName",       new Func<int, int, int, string>(GetTmStatusName));
       _engineScope.SetVariable("GetTmStatusFromRetro",  new Func<int, int, int, long, int?>(GetTmStatusFromRetro));
       _engineScope.SetVariable("IsTmStatusOn",          new Func<int, int, int, bool>(IsTmStatusOn));
       _engineScope.SetVariable("IsTmStatusFlagRaised",  new Func<int, int, int, TmFlags, bool>(IsTmStatusFlagRaised));
       _engineScope.SetVariable("GetTmAnalog",           new Func<int, int, int, float>(GetTmAnalog));
+      _engineScope.SetVariable("GetTmAnalogOrDefault",  new Func<int, int, int, float, float>(GetTmAnalogOrDefault));
       _engineScope.SetVariable("GetTmAnalogName",       new Func<int, int, int, string>(GetTmAnalogName));
       _engineScope.SetVariable("GetTmAnalogUnit",       new Func<int, int, int, string>(GetTmAnalogUnit));
       _engineScope.SetVariable("GetTmAnalogFromRetro",  new Func<int, int, int, long, int?, float?>(GetTmAnalogFromRetro));
