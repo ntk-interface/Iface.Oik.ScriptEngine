@@ -212,11 +212,11 @@ void LogDebug(string message)
 
 #### Особенности использования Javascript
 
-Поддерживается большая часть стандартов ECMAScript до 2024 версии
+Поддерживается большая часть стандартов языка вплоть до версии [ECMAScript 2024](https://www.w3schools.com/js/js_2024.asp).
 
 #### Особенности использования Python
 
-Полностью поддерживается версия языка [Python 2.7](https://www.python.org/download/releases/2.7/).
+Полностью поддерживается версия языка [Python 3.4](https://www.python.org/downloads/release/python-340/).
 
 ## Примеры скриптов
 Примеры скриптов доступны в каталоге `sample_scripts` в архиве установки.
