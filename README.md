@@ -212,9 +212,7 @@ void LogDebug(string message)
 
 #### Особенности использования Javascript
 
-Полностью поддерживается стандарт [ECMAScript 5.1](http://www.ecma-international.org/ecma-262/5.1/).
-
-Возможности ECMAScript 6+ (let/const вместо var, стрелочные функции, деструктуризация и т.п.) не поддерживаются.
+Поддерживается большая часть стандартов ECMAScript до 2024 версии
 
 #### Особенности использования Python
 

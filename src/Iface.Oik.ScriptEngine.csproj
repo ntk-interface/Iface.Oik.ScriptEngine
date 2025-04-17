@@ -6,12 +6,12 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="EPPlus" Version="4.5.3.3" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
-        <PackageReference Include="System.Text.Encoding.CodePages" Version="5.0.0" />
-        <PackageReference Include="IronPython" Version="2.7.9" />
-        <PackageReference Include="IronPython.StdLib" Version="2.7.9" />
-        <PackageReference Include="Jint" Version="2.11.58" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.2" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
+        <PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.1" />
+        <PackageReference Include="IronPython" Version="2.7.12" />
+        <PackageReference Include="IronPython.StdLib" Version="2.7.12" />
+        <PackageReference Include="Jint" Version="4.2.2" />
     </ItemGroup>
     <ItemGroup>
         <Reference Include="Iface.Oik.Tm">
