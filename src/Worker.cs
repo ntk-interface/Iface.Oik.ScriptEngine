@@ -346,6 +346,79 @@ namespace Iface.Oik.ScriptEngine
     }
 
 
+    public float GetTmAccum(int ch, int rtu, int point)
+    {
+      return _api.GetAccum(ch, rtu, point).GetAwaiter().GetResult();
+    }
+
+
+    public float GetTmAccumOrDefault(int ch, int rtu, int point, float defaultValue)
+    {
+      var tmAccum = new TmAccum(ch, rtu, point);
+      _api.UpdateAccum(tmAccum).Wait();
+      return tmAccum.HasProblems ? defaultValue : tmAccum.Value;
+    }
+
+
+    public float GetTmAccum(TmAddr addr)
+    {
+      return GetTmAnalog(addr.Ch, addr.Rtu, addr.Point);
+    }
+
+
+    public float GetTmAccumLoad(int ch, int rtu, int point)
+    {
+      return _api.GetAccumLoad(ch, rtu, point).GetAwaiter().GetResult();
+    }
+
+
+    public float GetTmAccumLoadOrDefault(int ch, int rtu, int point, float defaultValue)
+    {
+      var tmAccum = new TmAccum(ch, rtu, point);
+      _api.UpdateAccum(tmAccum).Wait();
+      return tmAccum.HasProblems ? defaultValue : tmAccum.Load;
+    }
+
+
+    public float GetTmAccumLoad(TmAddr addr)
+    {
+      return GetTmAnalog(addr.Ch, addr.Rtu, addr.Point);
+    }
+
+
+    public string GetTmAccumName(int ch, int rtu, int point)
+    {
+      var tmAccum = new TmAccum(ch, rtu, point);
+      _api.UpdateTagPropertiesAndClassData(tmAccum).Wait();
+      return tmAccum.Name;
+    }
+
+
+    public string GetTmAccumUnit(int ch, int rtu, int point)
+    {
+      var tmAccum = new TmAccum(ch, rtu, point);
+      _api.UpdateTagPropertiesAndClassData(tmAccum).Wait();
+      return tmAccum.Unit;
+    }
+
+
+    protected bool IsTmAccumFlagRaised(int ch, int rtu, int point, TmFlags flag)
+    {
+      var tmAccum = new TmAccum(ch, rtu, point);
+      _api.UpdateAccum(tmAccum).Wait();
+      return tmAccum.HasFlag(flag);
+    }
+
+
+    public float? GetTmAccumFromRetro(int ch, int rtu, int point, long timestamp)
+    {
+      var time        = DateUtil.GetDateTimeFromTimestamp(timestamp);
+      var analogRetro = _api.GetAccumFromRetro(ch, rtu, point, time).GetAwaiter().GetResult();
+
+      return !analogRetro.IsUnreliable ? analogRetro.Value : null;
+    }
+
+
     public void SetTmStatus(int ch, int rtu, int point, int status)
     {
       _api.SetStatus(ch, rtu, point, status).Wait();

@@ -29,13 +29,13 @@ string GetTmStatusName(int ch, int rtu, int point)
 ```
 int GetTmStatus(int ch, int rtu, int point)
 
-Возвращает состояние сигнала с адресом "ch":"rtu":"point" (канал:кп:объект), где 0 - откл, 1 - вкл 
+Возвращает текущее состояние сигнала с адресом "ch":"rtu":"point" (канал:кп:объект), где 0 - откл, 1 - вкл 
 ```
 
 ```
 int GetTmStatusOrDefault(int ch, int rtu, int point)
 
-Возвращает состояние сигнала с адресом "ch":"rtu":"point" (канал:кп:объект), где 0 - откл, 1 - вкл. 
+Возвращает текущее состояние сигнала с адресом "ch":"rtu":"point" (канал:кп:объект), где 0 - откл, 1 - вкл. 
 Если сигнал отсутствует, или недостоверен (флаги NT или IV), то возвращает переданное значение по умолчанию defaultValue
 ```
 
@@ -72,13 +72,13 @@ string GetTmAnalogUnit(int ch, int rtu, int point)
 ```
 float GetTmAnalog(int ch, int rtu, int point)
 
-Возвращает значение измерения с адресом "ch":"rtu":"point" (канал:кп:объект)
+Возвращает текущее значение измерения с адресом "ch":"rtu":"point" (канал:кп:объект)
 ```
 
 ```
 float GetTmAnalogOrDefault(int ch, int rtu, int point, float defaultValue)
 
-Возвращает значение измерения с адресом "ch":"rtu":"point" (канал:кп:объект)
+Возвращает текущее значение измерения с адресом "ch":"rtu":"point" (канал:кп:объект)
 Если сигнал отсутствует, или недостоверен (флаги NT или IV), то возвращает переданное значение по умолчанию defaultValue
 ```
 
@@ -110,6 +110,56 @@ float[] GetTmAnalogImpulseArchiveAverage(int ch, int rtu, int point, long startT
 float[] GetTmAnalogMicroSeries(int ch, int rtu, int point)
 
 Возвращает массив значений измерения с адресом "ch":"rtu":"point" (канал:кп:объект) из микросерий (последние значения ежесекундно, не более десяти значений). Только для сервера 3.Х. Если значений нет, массив будет пустым. Если одно из значений недостоверно, элемент массива равен null.
+```
+
+```
+string GetTmAccumName(int ch, int rtu, int point)
+
+Возвращает наименование интегрального измерения (ТИИ) с адресом "ch":"rtu":"point" (канал:кп:объект)
+```
+
+```
+string GetTmAccumUnit(int ch, int rtu, int point)
+
+Возвращает единицу измерения (МВт, кВ и т.п.) интегрального измерения (ТИИ) с адресом "ch":"rtu":"point" (канал:кп:объект)
+```
+
+```
+float GetTmAccum(int ch, int rtu, int point)
+
+Возвращает текущее значение интегрального измерения (ТИИ) с адресом "ch":"rtu":"point" (канал:кп:объект)
+```
+
+```
+float GetTmAccumOrDefault(int ch, int rtu, int point, float defaultValue)
+
+Возвращает текущее значение интегрального измерения (ТИИ) с адресом "ch":"rtu":"point" (канал:кп:объект)
+Если сигнал отсутствует, или недостоверен (флаги NT или IV), то возвращает переданное значение по умолчанию defaultValue
+```
+
+```
+float GetTmAccumLoad(int ch, int rtu, int point)
+
+Возвращает значение нагрузки интегрального измерения (ТИИ) с адресом "ch":"rtu":"point" (канал:кп:объект)
+```
+
+```
+float GetTmAccumLoadOrDefault(int ch, int rtu, int point, float defaultValue)
+
+Возвращает значение нагрузки интегрального измерения (ТИИ) с адресом "ch":"rtu":"point" (канал:кп:объект)
+Если сигнал отсутствует, или недостоверен (флаги NT или IV), то возвращает переданное значение по умолчанию defaultValue
+```
+
+```
+bool IsTmAccumFlagRaised(int ch, int rtu, int point, TmFlags flag)
+
+Возвращает булевое состояние взведенности флага "flag" (см. ниже список флагов) интегрального измерения (ТИИ) с адресом "ch":"rtu":"point" (канал:кп:объект)
+```
+
+```
+float? GetTmAccumFromRetro(int ch, int rtu, int point, long timestamp, int? retroNum)
+
+Возвращает значение интегрального измерения (ТИИ) с адресом "ch":"rtu":"point" (канал:кп:объект) из ретроспективы в момент времени "timestamp" (время в секундах, начиная с 1 января 1970). Если значение недостоверно, возвращает null
 ```
 
 #### Функции для занесения данных телеметрии сервера ОИК
