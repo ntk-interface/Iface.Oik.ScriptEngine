@@ -77,7 +77,8 @@ namespace Iface.Oik.ScriptEngine.Workers
     private void UpdateEngineSearchPath()
     {
       var paths = _engine.GetSearchPaths();
-      paths.Add("PythonLib.zip");
+      paths.Add(Path.Combine(AppContext.BaseDirectory, "PythonLib"));
+      paths.Add(Path.Combine(AppContext.BaseDirectory, "PythonLib.zip"));
       _engine.SetSearchPaths(paths);
     }
   }
