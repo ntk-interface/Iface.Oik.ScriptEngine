@@ -15,6 +15,8 @@ namespace Iface.Oik.ScriptEngine.Workers
       Functions.Add("OverrideScriptTimeout", new OverrideScriptTimeout(worker));
       Functions.Add("TM",                    new Tm(worker));
       Functions.Add("GetTmAnalog",           new GetTmAnalog(worker));
+      Functions.Add("GetTmAccum",            new GetTmAccum(worker));
+      Functions.Add("GetTmAccumLoad",        new GetTmAccumLoad(worker));
       Functions.Add("GetTmStatus",           new GetTmStatus(worker));
       Functions.Add("SetTmAnalog",           new SetTmAnalog(worker));
       Functions.Add("SetTmStatus",           new SetTmStatus(worker));
@@ -97,6 +99,62 @@ namespace Iface.Oik.ScriptEngine.Workers
                               (int) addrParts[2].Value);
 
         return CreateResult((double) _worker.GetTmAnalog(addr), DataType.Decimal);
+      }
+    }
+
+
+    private class GetTmAccum : ExcelFunction
+    {
+      private readonly ExcelWorker _worker;
+
+
+      public GetTmAccum(ExcelWorker worker)
+      {
+        _worker = worker;
+      }
+
+
+      public override CompileResult Execute(IEnumerable<FunctionArgument> arguments, ParsingContext context)
+      {
+        var functionArguments = arguments.ToList();
+        ValidateArguments(functionArguments, 3);
+
+        var addrParts = ArgsToDoubleEnumerable(functionArguments, context).ToList();
+
+        var addr = new TmAddr(TmType.Accum,
+                              (int) addrParts[0].Value,
+                              (int) addrParts[1].Value,
+                              (int) addrParts[2].Value);
+
+        return CreateResult((double) _worker.GetTmAccum(addr), DataType.Decimal);
+      }
+    }
+
+
+    private class GetTmAccumLoad : ExcelFunction
+    {
+      private readonly ExcelWorker _worker;
+
+
+      public GetTmAccumLoad(ExcelWorker worker)
+      {
+        _worker = worker;
+      }
+
+
+      public override CompileResult Execute(IEnumerable<FunctionArgument> arguments, ParsingContext context)
+      {
+        var functionArguments = arguments.ToList();
+        ValidateArguments(functionArguments, 3);
+
+        var addrParts = ArgsToDoubleEnumerable(functionArguments, context).ToList();
+
+        var addr = new TmAddr(TmType.Accum,
+                              (int) addrParts[0].Value,
+                              (int) addrParts[1].Value,
+                              (int) addrParts[2].Value);
+
+        return CreateResult((double) _worker.GetTmAccumLoad(addr), DataType.Decimal);
       }
     }
 

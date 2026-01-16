@@ -77,6 +77,20 @@ namespace Iface.Oik.ScriptEngine.Workers
         return true;
       }
 
+      match = new Regex(@"GetTmAccum\((\d+);(\d+);(\d+)\)", RegexOptions.IgnoreCase).Match(commentText);
+      if (match.Success)
+      {
+        cell.Value = (double) GetTmAccum(CreateTmAddrFromRegexp(TmType.Accum, match.Groups));
+        return true;
+      }
+
+      match = new Regex(@"GetTmAccumLoad\((\d+);(\d+);(\d+)\)", RegexOptions.IgnoreCase).Match(commentText);
+      if (match.Success)
+      {
+        cell.Value = (double) GetTmAccumLoad(CreateTmAddrFromRegexp(TmType.Accum, match.Groups));
+        return true;
+      }
+
       match = new Regex(@"GetTmStatus\((\d+);(\d+);(\d+)\)", RegexOptions.IgnoreCase).Match(commentText);
       if (match.Success)
       {
