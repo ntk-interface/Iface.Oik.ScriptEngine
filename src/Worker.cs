@@ -362,7 +362,7 @@ namespace Iface.Oik.ScriptEngine
 
     public float GetTmAccum(TmAddr addr)
     {
-      return GetTmAnalog(addr.Ch, addr.Rtu, addr.Point);
+      return GetTmAccum(addr.Ch, addr.Rtu, addr.Point);
     }
 
 
@@ -382,7 +382,7 @@ namespace Iface.Oik.ScriptEngine
 
     public float GetTmAccumLoad(TmAddr addr)
     {
-      return GetTmAnalog(addr.Ch, addr.Rtu, addr.Point);
+      return GetTmAccumLoad(addr.Ch, addr.Rtu, addr.Point);
     }
 
 
