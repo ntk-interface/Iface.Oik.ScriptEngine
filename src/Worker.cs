@@ -11,529 +11,529 @@ using Iface.Oik.Tm.Interfaces;
 using Iface.Oik.Tm.Utils;
 using Microsoft.Extensions.Hosting;
 
-namespace Iface.Oik.ScriptEngine
+namespace Iface.Oik.ScriptEngine;
+
+public abstract class Worker : BackgroundService
 {
-  public abstract class Worker : BackgroundService
+  private readonly IOikDataApi _api;
+
+  private readonly string _name;
+
+  private int  _scriptTimeout = 2000;
+  private bool _isScriptTimeoutOverriden;
+  private bool _isTelecontrolAllowed;
+
+  private readonly Dictionary<string, object> _storage = new();
+
+
+  protected abstract void DoWork();
+
+
+  protected Worker(IOikDataApi api, string filename)
   {
-    private readonly IOikDataApi _api;
-
-    private readonly string _name;
-
-    private int  _scriptTimeout = 2000;
-    private bool _isScriptTimeoutOverriden;
-    private bool _isTelecontrolAllowed;
-
-    private readonly Dictionary<string, object> _storage = new();
+    _api  = api;
+    _name = Path.GetFileName(filename);
+  }
 
 
-    protected abstract void DoWork();
+  protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+  {
+    await Task.Delay(500, stoppingToken); // такое асинхронное ожидание даёт хосту возможность завершить инициализацию
 
-
-    protected Worker(IOikDataApi api, string filename)
+    while (!stoppingToken.IsCancellationRequested)
     {
-      _api  = api;
-      _name = Path.GetFileName(filename);
-    }
-
-
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-    {
-      await Task.Delay(500, stoppingToken); // такое асинхронное ожидание даёт хосту возможность завершить инициализацию
-
-      while (!stoppingToken.IsCancellationRequested)
+      try
       {
-        try
-        {
-          var sw = Stopwatch.StartNew();
-          DoWork();
-          Tms.PrintDebug($"Скрипт \"{_name}\" рассчитан за {sw.ElapsedMilliseconds} мс");
-        }
-        catch (Exception ex)
-        {
-          Tms.PrintDebug($"Ошибка при расчете скрипта \"{_name}\": {ex.Message}");
-        }
-        await Task.Delay(_scriptTimeout, stoppingToken);
+        var sw = Stopwatch.StartNew();
+        DoWork();
+        Tms.PrintDebug($"Скрипт \"{_name}\" рассчитан за {sw.ElapsedMilliseconds} мс");
       }
-    }
-
-
-    public void AllowTelecontrol()
-    {
-      if (_isTelecontrolAllowed)
+      catch (Exception ex)
       {
-        return;
+        Tms.PrintDebug($"Ошибка при расчете скрипта \"{_name}\": {ex.Message}");
       }
-      _isTelecontrolAllowed = true;
-      LogDebug("Команды ТУ разрешены");
+      await Task.Delay(_scriptTimeout, stoppingToken);
     }
+  }
 
 
-    public void OverrideScriptTimeout(int timeout)
+  public void AllowTelecontrol()
+  {
+    if (_isTelecontrolAllowed)
     {
-      if (_isScriptTimeoutOverriden)
-      {
-        return;
-      }
-      _scriptTimeout            = timeout;
-      _isScriptTimeoutOverriden = true;
+      return;
     }
+    _isTelecontrolAllowed = true;
+    LogDebug("Команды ТУ разрешены");
+  }
 
 
-    public void Telecontrol(int ch, int rtu, int point, int explicitNewStatus)
+  public void OverrideScriptTimeout(int timeout)
+  {
+    if (_isScriptTimeoutOverriden)
     {
-      var tmStatus = new TmStatus(ch, rtu, point);
-
-      if (!_isTelecontrolAllowed)
-      {
-        Tms.PrintDebug($"Не подана команда ТУ на {tmStatus.TmAddr} - в скрипте не разрешены команды");
-        return;
-      }
-      var result = _api.TelecontrolExplicitly(tmStatus, explicitNewStatus).GetAwaiter().GetResult();
-      if (result == TmTelecontrolResult.Success)
-      {
-        Tms.PrintDebug($"Выполнена команда ТУ на {tmStatus.TmAddr}");
-      }
-      else
-      {
-        Tms.PrintDebug($"Ошибка команды ТУ на {tmStatus.TmAddr} - {result.GetDescription()}");
-      }
+      return;
     }
+    _scriptTimeout            = timeout;
+    _isScriptTimeoutOverriden = true;
+  }
 
 
-    public void TeleregulateByStepUp(int ch, int rtu, int point)
+  public void Telecontrol(int ch, int rtu, int point, int explicitNewStatus)
+  {
+    var tmStatus = new TmStatus(ch, rtu, point);
+
+    if (!_isTelecontrolAllowed)
     {
-      var tmAnalog = new TmAnalog(ch, rtu, point);
-
-      if (!_isTelecontrolAllowed)
-      {
-        Tms.PrintDebug($"Не подана команда регулирования на {tmAnalog.TmAddr} - в скрипте не разрешены команды");
-        return;
-      }
-      _api.UpdateAnalog(tmAnalog).Wait();
-      _api.UpdateTagPropertiesAndClassData(tmAnalog).Wait();
-      var result = _api.TeleregulateByStepUp(tmAnalog).ConfigureAwait(false).GetAwaiter().GetResult();
-      if (result == TmTelecontrolResult.Success)
-      {
-        Tms.PrintDebug($"Выполнена команда регулирования на {tmAnalog.TmAddr}");
-      }
-      else
-      {
-        Tms.PrintDebug($"Ошибка команды регулирования на {tmAnalog.TmAddr} - {result.GetDescription()}");
-      }
+      Tms.PrintDebug($"Не подана команда ТУ на {tmStatus.TmAddr} - в скрипте не разрешены команды");
+      return;
     }
-
-
-    public void TeleregulateByStepDown(int ch, int rtu, int point)
+    var result = _api.TelecontrolExplicitly(tmStatus, explicitNewStatus).GetAwaiter().GetResult();
+    if (result == TmTelecontrolResult.Success)
     {
-      var tmAnalog = new TmAnalog(ch, rtu, point);
-
-      if (!_isTelecontrolAllowed)
-      {
-        Tms.PrintDebug($"Не подана команда регулирования на {tmAnalog.TmAddr} - в скрипте не разрешены команды");
-        return;
-      }
-      _api.UpdateAnalog(tmAnalog).Wait();
-      _api.UpdateTagPropertiesAndClassData(tmAnalog).Wait();
-      var result = _api.TeleregulateByStepDown(tmAnalog).ConfigureAwait(false).GetAwaiter().GetResult();
-      if (result == TmTelecontrolResult.Success)
-      {
-        Tms.PrintDebug($"Выполнена команда регулирования на {tmAnalog.TmAddr}");
-      }
-      else
-      {
-        Tms.PrintDebug($"Ошибка команды регулирования на {tmAnalog.TmAddr} - {result.GetDescription()}");
-      }
+      Tms.PrintDebug($"Выполнена команда ТУ на {tmStatus.TmAddr}");
     }
-
-
-    public void TeleregulateByCode(int ch, int rtu, int point, int code)
+    else
     {
-      var tmAnalog = new TmAnalog(ch, rtu, point);
-
-      if (!_isTelecontrolAllowed)
-      {
-        Tms.PrintDebug($"Не подана команда регулирования на {tmAnalog.TmAddr} - в скрипте не разрешены команды");
-        return;
-      }
-      _api.UpdateAnalog(tmAnalog).Wait();
-      _api.UpdateTagPropertiesAndClassData(tmAnalog).Wait();
-      var result = _api.TeleregulateByCode(tmAnalog, code).ConfigureAwait(false).GetAwaiter().GetResult();
-      if (result == TmTelecontrolResult.Success)
-      {
-        Tms.PrintDebug($"Выполнена команда регулирования на {tmAnalog.TmAddr}");
-      }
-      else
-      {
-        Tms.PrintDebug($"Ошибка команды регулирования на {tmAnalog.TmAddr} - {result.GetDescription()}");
-      }
+      Tms.PrintDebug($"Ошибка команды ТУ на {tmStatus.TmAddr} - {result.GetDescription()}");
     }
+  }
 
 
-    public void TeleregulateByValue(int ch, int rtu, int point, float value)
+  public void TeleregulateByStepUp(int ch, int rtu, int point)
+  {
+    var tmAnalog = new TmAnalog(ch, rtu, point);
+
+    if (!_isTelecontrolAllowed)
     {
-      var tmAnalog = new TmAnalog(ch, rtu, point);
-
-      if (!_isTelecontrolAllowed)
-      {
-        Tms.PrintDebug($"Не подана команда регулирования на {tmAnalog.TmAddr} - в скрипте не разрешены команды");
-        return;
-      }
-      _api.UpdateAnalog(tmAnalog).Wait();
-      _api.UpdateTagPropertiesAndClassData(tmAnalog).Wait();
-      var result = _api.TeleregulateByValue(tmAnalog, value).ConfigureAwait(false).GetAwaiter().GetResult();
-      if (result == TmTelecontrolResult.Success)
-      {
-        Tms.PrintDebug($"Выполнена команда регулирования на {tmAnalog.TmAddr}");
-      }
-      else
-      {
-        Tms.PrintDebug($"Ошибка команды регулирования на {tmAnalog.TmAddr} - {result.GetDescription()}");
-      }
+      Tms.PrintDebug($"Не подана команда регулирования на {tmAnalog.TmAddr} - в скрипте не разрешены команды");
+      return;
     }
-
-
-    public bool IsTmStatusOn(int ch, int rtu, int point)
+    _api.UpdateAnalog(tmAnalog).Wait();
+    _api.UpdateTagPropertiesAndClassData(tmAnalog).Wait();
+    var result = _api.TeleregulateByStepUp(tmAnalog).ConfigureAwait(false).GetAwaiter().GetResult();
+    if (result == TmTelecontrolResult.Success)
     {
-      return GetTmStatus(ch, rtu, point) > 0;
+      Tms.PrintDebug($"Выполнена команда регулирования на {tmAnalog.TmAddr}");
     }
-
-
-    protected bool IsTmStatusFlagRaised(int ch, int rtu, int point, TmFlags flag)
+    else
     {
-      var tmStatus = new TmStatus(ch, rtu, point);
-      _api.UpdateStatus(tmStatus).Wait();
-      return tmStatus.HasFlag(flag);
+      Tms.PrintDebug($"Ошибка команды регулирования на {tmAnalog.TmAddr} - {result.GetDescription()}");
     }
+  }
 
 
-    public int GetTmStatus(int ch, int rtu, int point)
+  public void TeleregulateByStepDown(int ch, int rtu, int point)
+  {
+    var tmAnalog = new TmAnalog(ch, rtu, point);
+
+    if (!_isTelecontrolAllowed)
     {
-      return _api.GetStatus(ch, rtu, point).GetAwaiter().GetResult();
+      Tms.PrintDebug($"Не подана команда регулирования на {tmAnalog.TmAddr} - в скрипте не разрешены команды");
+      return;
     }
-
-
-    public int GetTmStatusOrDefault(int ch, int rtu, int point, int defaultValue)
+    _api.UpdateAnalog(tmAnalog).Wait();
+    _api.UpdateTagPropertiesAndClassData(tmAnalog).Wait();
+    var result = _api.TeleregulateByStepDown(tmAnalog).ConfigureAwait(false).GetAwaiter().GetResult();
+    if (result == TmTelecontrolResult.Success)
     {
-      var tmStatus = new TmStatus(ch, rtu, point);
-      _api.UpdateStatus(tmStatus).Wait();
-      return tmStatus.HasProblems ? defaultValue : tmStatus.Status;
+      Tms.PrintDebug($"Выполнена команда регулирования на {tmAnalog.TmAddr}");
     }
-
-
-    public string GetTmStatusName(int ch, int rtu, int point)
+    else
     {
-      var tmStatus = new TmStatus(ch, rtu, point);
-      _api.UpdateTagPropertiesAndClassData(tmStatus).Wait();
-      return tmStatus.Name;
+      Tms.PrintDebug($"Ошибка команды регулирования на {tmAnalog.TmAddr} - {result.GetDescription()}");
     }
+  }
 
 
-    public int GetTmStatus(TmAddr addr)
+  public void TeleregulateByCode(int ch, int rtu, int point, int code)
+  {
+    var tmAnalog = new TmAnalog(ch, rtu, point);
+
+    if (!_isTelecontrolAllowed)
     {
-      return GetTmStatus(addr.Ch, addr.Rtu, addr.Point);
+      Tms.PrintDebug($"Не подана команда регулирования на {tmAnalog.TmAddr} - в скрипте не разрешены команды");
+      return;
     }
-
-
-    public int? GetTmStatusFromRetro(int ch, int rtu, int point, long timestamp)
+    _api.UpdateAnalog(tmAnalog).Wait();
+    _api.UpdateTagPropertiesAndClassData(tmAnalog).Wait();
+    var result = _api.TeleregulateByCode(tmAnalog, code).ConfigureAwait(false).GetAwaiter().GetResult();
+    if (result == TmTelecontrolResult.Success)
     {
-      var time        = DateUtil.GetDateTimeFromTimestamp(timestamp);
-      var statusRetro = _api.GetStatusFromRetro(ch, rtu, point, time).GetAwaiter().GetResult();
-
-      return statusRetro >= 0 ? statusRetro : null;
+      Tms.PrintDebug($"Выполнена команда регулирования на {tmAnalog.TmAddr}");
     }
-
-
-    public float GetTmAnalog(int ch, int rtu, int point)
+    else
     {
-      return _api.GetAnalog(ch, rtu, point).GetAwaiter().GetResult();
+      Tms.PrintDebug($"Ошибка команды регулирования на {tmAnalog.TmAddr} - {result.GetDescription()}");
     }
+  }
 
 
-    public float GetTmAnalog(TmAddr addr)
+  public void TeleregulateByValue(int ch, int rtu, int point, float value)
+  {
+    var tmAnalog = new TmAnalog(ch, rtu, point);
+
+    if (!_isTelecontrolAllowed)
     {
-      return GetTmAnalog(addr.Ch, addr.Rtu, addr.Point);
+      Tms.PrintDebug($"Не подана команда регулирования на {tmAnalog.TmAddr} - в скрипте не разрешены команды");
+      return;
     }
-
-
-    public float GetTmAnalogOrDefault(int ch, int rtu, int point, float defaultValue)
+    _api.UpdateAnalog(tmAnalog).Wait();
+    _api.UpdateTagPropertiesAndClassData(tmAnalog).Wait();
+    var result = _api.TeleregulateByValue(tmAnalog, value).ConfigureAwait(false).GetAwaiter().GetResult();
+    if (result == TmTelecontrolResult.Success)
     {
-      var tmAnalog = new TmAnalog(ch, rtu, point);
-      _api.UpdateAnalog(tmAnalog).Wait();
-      return tmAnalog.HasProblems ? defaultValue : tmAnalog.Value;
+      Tms.PrintDebug($"Выполнена команда регулирования на {tmAnalog.TmAddr}");
     }
-
-
-    public string GetTmAnalogName(int ch, int rtu, int point)
+    else
     {
-      var tmAnalog = new TmAnalog(ch, rtu, point);
-      _api.UpdateTagPropertiesAndClassData(tmAnalog).Wait();
-      return tmAnalog.Name;
+      Tms.PrintDebug($"Ошибка команды регулирования на {tmAnalog.TmAddr} - {result.GetDescription()}");
     }
+  }
 
 
-    public string GetTmAnalogUnit(int ch, int rtu, int point)
+  public bool IsTmStatusOn(int ch, int rtu, int point)
+  {
+    return GetTmStatus(ch, rtu, point) > 0;
+  }
+
+
+  protected bool IsTmStatusFlagRaised(int ch, int rtu, int point, TmFlags flag)
+  {
+    var tmStatus = new TmStatus(ch, rtu, point);
+    _api.UpdateStatus(tmStatus).Wait();
+    return tmStatus.HasFlag(flag);
+  }
+
+
+  public int GetTmStatus(int ch, int rtu, int point)
+  {
+    return _api.GetStatus(ch, rtu, point).GetAwaiter().GetResult();
+  }
+
+
+  public int GetTmStatusOrDefault(int ch, int rtu, int point, int defaultValue)
+  {
+    var tmStatus = new TmStatus(ch, rtu, point);
+    _api.UpdateStatus(tmStatus).Wait();
+    return tmStatus.HasProblems ? defaultValue : tmStatus.Status;
+  }
+
+
+  public string GetTmStatusName(int ch, int rtu, int point)
+  {
+    var tmStatus = new TmStatus(ch, rtu, point);
+    _api.UpdateTagPropertiesAndClassData(tmStatus).Wait();
+    return tmStatus.Name;
+  }
+
+
+  public int GetTmStatus(TmAddr addr)
+  {
+    return GetTmStatus(addr.Ch, addr.Rtu, addr.Point);
+  }
+
+
+  public int? GetTmStatusFromRetro(int ch, int rtu, int point, long timestamp)
+  {
+    var time        = DateUtil.GetDateTimeFromTimestamp(timestamp);
+    var statusRetro = _api.GetStatusFromRetro(ch, rtu, point, time).GetAwaiter().GetResult();
+
+    return statusRetro >= 0 ? statusRetro : null;
+  }
+
+
+  public float GetTmAnalog(int ch, int rtu, int point)
+  {
+    return _api.GetAnalog(ch, rtu, point).GetAwaiter().GetResult();
+  }
+
+
+  public float GetTmAnalog(TmAddr addr)
+  {
+    return GetTmAnalog(addr.Ch, addr.Rtu, addr.Point);
+  }
+
+
+  public float GetTmAnalogOrDefault(int ch, int rtu, int point, float defaultValue)
+  {
+    var tmAnalog = new TmAnalog(ch, rtu, point);
+    _api.UpdateAnalog(tmAnalog).Wait();
+    return tmAnalog.HasProblems ? defaultValue : tmAnalog.Value;
+  }
+
+
+  public string GetTmAnalogName(int ch, int rtu, int point)
+  {
+    var tmAnalog = new TmAnalog(ch, rtu, point);
+    _api.UpdateTagPropertiesAndClassData(tmAnalog).Wait();
+    return tmAnalog.Name;
+  }
+
+
+  public string GetTmAnalogUnit(int ch, int rtu, int point)
+  {
+    var tmAnalog = new TmAnalog(ch, rtu, point);
+    _api.UpdateTagPropertiesAndClassData(tmAnalog).Wait();
+    return tmAnalog.Unit;
+  }
+
+
+  public float? GetTmAnalogFromRetro(int ch, int rtu, int point, long timestamp, int? retroNum)
+  {
+    var time        = DateUtil.GetDateTimeFromTimestamp(timestamp);
+    var analogRetro = _api.GetAnalogFromRetro(ch, rtu, point, time, retroNum ?? 0).GetAwaiter().GetResult();
+
+    return !analogRetro.IsUnreliable ? analogRetro.Value : null;
+  }
+
+
+  public float?[] GetTmAnalogRetro(int  ch,
+                                   int  rtu,
+                                   int  point,
+                                   long startTimestamp,
+                                   long endTimestamp,
+                                   int  step,
+                                   int? retroNum)
+  {
+    var retro = _api.GetAnalogRetro(new TmAnalog(ch, rtu, point),
+                                    new TmAnalogRetroFilter(startTimestamp, endTimestamp, step),
+                                    retroNum ?? 0)
+                    .GetAwaiter().GetResult();
+    if (retro == null)
     {
-      var tmAnalog = new TmAnalog(ch, rtu, point);
-      _api.UpdateTagPropertiesAndClassData(tmAnalog).Wait();
-      return tmAnalog.Unit;
+      return Array.Empty<float?>();
     }
+    return retro.Select(ms => !ms.IsUnreliable ? ms.Value : (float?)null).ToArray();
+  }
 
 
-    public float? GetTmAnalogFromRetro(int ch, int rtu, int point, long timestamp, int? retroNum)
+  public float?[] GetTmAnalogImpulseArchiveAverage(int  ch,
+                                                   int  rtu,
+                                                   int  point,
+                                                   long startTimestamp,
+                                                   long endTimestamp,
+                                                   int  step)
+  {
+    var impulseArchive = _api.GetImpulseArchiveAverage(new TmAnalog(ch, rtu, point),
+                                                       new TmAnalogRetroFilter(startTimestamp, endTimestamp, step))
+                             .GetAwaiter().GetResult();
+    if (impulseArchive == null)
     {
-      var time        = DateUtil.GetDateTimeFromTimestamp(timestamp);
-      var analogRetro = _api.GetAnalogFromRetro(ch, rtu, point, time, retroNum ?? 0).GetAwaiter().GetResult();
-
-      return !analogRetro.IsUnreliable ? analogRetro.Value : null;
+      return Array.Empty<float?>();
     }
+    return impulseArchive.Select(ms => !ms.IsUnreliable ? ms.Value : (float?)null).ToArray();
+  }
 
 
-    public float?[] GetTmAnalogRetro(int  ch,
-                                    int  rtu,
-                                    int  point,
-                                    long startTimestamp,
-                                    long endTimestamp,
-                                    int  step,
-                                    int? retroNum)
-    {
-      var retro = _api.GetAnalogRetro(new TmAnalog(ch, rtu, point),
-                                      new TmAnalogRetroFilter(startTimestamp, endTimestamp, step),
-                                      retroNum ?? 0)
-                      .GetAwaiter().GetResult();
-      if (retro == null)
-      {
-        return Array.Empty<float?>();
-      }
-      return retro.Select(ms => !ms.IsUnreliable ? ms.Value : (float?)null).ToArray();
-    }
-
-
-    public float?[] GetTmAnalogImpulseArchiveAverage(int  ch,
-                                                    int  rtu,
-                                                    int  point,
-                                                    long startTimestamp,
-                                                    long endTimestamp,
-                                                    int  step)
-    {
-      var impulseArchive = _api.GetImpulseArchiveAverage(new TmAnalog(ch, rtu, point),
-                                                         new TmAnalogRetroFilter(startTimestamp, endTimestamp, step))
-                               .GetAwaiter().GetResult();
-      if (impulseArchive == null)
-      {
-        return Array.Empty<float?>();
-      }
-      return impulseArchive.Select(ms => !ms.IsUnreliable ? ms.Value : (float?)null).ToArray();
-    }
-
-
-    public float?[] GetTmAnalogMicroSeries(int ch, int rtu, int point)
-    {
-      var microSeries = _api.GetAnalogsMicroSeries(new[] { new TmAnalog(ch, rtu, point) }).GetAwaiter().GetResult();
+  public float?[] GetTmAnalogMicroSeries(int ch, int rtu, int point)
+  {
+    var microSeries = _api.GetAnalogsMicroSeries(new[] { new TmAnalog(ch, rtu, point) }).GetAwaiter().GetResult();
       
-      if (microSeries == null)
-      {
-        return Array.Empty<float?>();
-      }
-      return microSeries.FirstOrDefault()?.Select(ms => !ms.IsUnreliable ? ms.Value : (float?)null).ToArray();
-    }
-
-
-    protected bool IsTmAnalogFlagRaised(int ch, int rtu, int point, TmFlags flag)
+    if (microSeries == null)
     {
-      var tmAnalog = new TmAnalog(ch, rtu, point);
-      _api.UpdateAnalog(tmAnalog).Wait();
-      return tmAnalog.HasFlag(flag);
+      return Array.Empty<float?>();
     }
+    return microSeries.FirstOrDefault()?.Select(ms => !ms.IsUnreliable ? ms.Value : (float?)null).ToArray() 
+        ?? Array.Empty<float?>();
+  }
 
 
-    public float GetTmAccum(int ch, int rtu, int point)
+  protected bool IsTmAnalogFlagRaised(int ch, int rtu, int point, TmFlags flag)
+  {
+    var tmAnalog = new TmAnalog(ch, rtu, point);
+    _api.UpdateAnalog(tmAnalog).Wait();
+    return tmAnalog.HasFlag(flag);
+  }
+
+
+  public float GetTmAccum(int ch, int rtu, int point)
+  {
+    return _api.GetAccum(ch, rtu, point).GetAwaiter().GetResult();
+  }
+
+
+  public float GetTmAccumOrDefault(int ch, int rtu, int point, float defaultValue)
+  {
+    var tmAccum = new TmAccum(ch, rtu, point);
+    _api.UpdateAccum(tmAccum).Wait();
+    return tmAccum.HasProblems ? defaultValue : tmAccum.Value;
+  }
+
+
+  public float GetTmAccum(TmAddr addr)
+  {
+    return GetTmAccum(addr.Ch, addr.Rtu, addr.Point);
+  }
+
+
+  public float GetTmAccumLoad(int ch, int rtu, int point)
+  {
+    return _api.GetAccumLoad(ch, rtu, point).GetAwaiter().GetResult();
+  }
+
+
+  public float GetTmAccumLoadOrDefault(int ch, int rtu, int point, float defaultValue)
+  {
+    var tmAccum = new TmAccum(ch, rtu, point);
+    _api.UpdateAccum(tmAccum).Wait();
+    return tmAccum.HasProblems ? defaultValue : tmAccum.Load;
+  }
+
+
+  public float GetTmAccumLoad(TmAddr addr)
+  {
+    return GetTmAccumLoad(addr.Ch, addr.Rtu, addr.Point);
+  }
+
+
+  public string GetTmAccumName(int ch, int rtu, int point)
+  {
+    var tmAccum = new TmAccum(ch, rtu, point);
+    _api.UpdateTagPropertiesAndClassData(tmAccum).Wait();
+    return tmAccum.Name;
+  }
+
+
+  public string GetTmAccumUnit(int ch, int rtu, int point)
+  {
+    var tmAccum = new TmAccum(ch, rtu, point);
+    _api.UpdateTagPropertiesAndClassData(tmAccum).Wait();
+    return tmAccum.Unit;
+  }
+
+
+  protected bool IsTmAccumFlagRaised(int ch, int rtu, int point, TmFlags flag)
+  {
+    var tmAccum = new TmAccum(ch, rtu, point);
+    _api.UpdateAccum(tmAccum).Wait();
+    return tmAccum.HasFlag(flag);
+  }
+
+
+  public float? GetTmAccumFromRetro(int ch, int rtu, int point, long timestamp)
+  {
+    var time        = DateUtil.GetDateTimeFromTimestamp(timestamp);
+    var analogRetro = _api.GetAccumFromRetro(ch, rtu, point, time).GetAwaiter().GetResult();
+
+    return !analogRetro.IsUnreliable ? analogRetro.Value : null;
+  }
+
+
+  public void SetTmStatus(int ch, int rtu, int point, int status)
+  {
+    _api.SetStatus(ch, rtu, point, status).Wait();
+  }
+
+
+  public void SetTmStatus(TmAddr addr, int status)
+  {
+    SetTmStatus(addr.Ch, addr.Rtu, addr.Point, status);
+  }
+
+
+  public void RaiseTmStatusFlag(int ch, int rtu, int point, TmFlags flags)
+  {
+    _api.SetTagFlagsExplicitly(new TmStatus(ch, rtu, point), flags);
+  }
+
+
+  public void RaiseTmStatusFlag(TmAddr addr, TmFlags flags)
+  {
+    RaiseTmStatusFlag(addr.Ch, addr.Rtu, addr.Point, flags);
+  }
+
+
+  public void ClearTmStatusFlag(int ch, int rtu, int point, TmFlags flags)
+  {
+    _api.ClearTagFlagsExplicitly(new TmStatus(ch, rtu, point), flags);
+  }
+
+
+  public void ClearTmStatusFlag(TmAddr addr, TmFlags flags)
+  {
+    ClearTmStatusFlag(addr.Ch, addr.Rtu, addr.Point, flags);
+  }
+
+
+  public void SetTmAnalog(int ch, int rtu, int point, float value)
+  {
+    _api.SetAnalog(ch, rtu, point, value).Wait();
+  }
+
+
+  public void SetTmAnalog(TmAddr addr, float value)
+  {
+    SetTmAnalog(addr.Ch, addr.Rtu, addr.Point, value);
+  }
+
+
+  public void RaiseTmAnalogFlag(int ch, int rtu, int point, TmFlags flags)
+  {
+    _api.SetTagFlagsExplicitly(new TmAnalog(ch, rtu, point), flags);
+  }
+
+
+  public void RaiseTmAnalogFlag(TmAddr addr, TmFlags flags)
+  {
+    RaiseTmAnalogFlag(addr.Ch, addr.Rtu, addr.Point, flags);
+  }
+
+
+  public void ClearTmAnalogFlag(int ch, int rtu, int point, TmFlags flags)
+  {
+    _api.ClearTagFlagsExplicitly(new TmAnalog(ch, rtu, point), flags);
+  }
+
+
+  public void ClearTmAnalogFlag(TmAddr addr, TmFlags flags)
+  {
+    ClearTmAnalogFlag(addr.Ch, addr.Rtu, addr.Point, flags);
+  }
+
+
+  public string GetExpressionResult(string expression)
+  {
+    return _api.GetExpressionResult(expression).GetAwaiter().GetResult();
+  }
+
+
+  public float GetExpressionResultFloat(string expression)
+  {
+    if (!TryGetExpressionResult(expression, out var value))
     {
-      return _api.GetAccum(ch, rtu, point).GetAwaiter().GetResult();
+      throw new Exception("Ошибка функции TM");
     }
+    return value;
+  }
 
 
-    public float GetTmAccumOrDefault(int ch, int rtu, int point, float defaultValue)
+  public bool TryGetExpressionResult(string expression, out float value)
+  {
+    var expressionResult = GetExpressionResult(expression);
+    if (!float.TryParse(expressionResult, NumberStyles.Any, CultureInfo.InvariantCulture, out value))
     {
-      var tmAccum = new TmAccum(ch, rtu, point);
-      _api.UpdateAccum(tmAccum).Wait();
-      return tmAccum.HasProblems ? defaultValue : tmAccum.Value;
+      LogDebug(expressionResult);
+      return false;
     }
+    return true;
+  }
 
 
-    public float GetTmAccum(TmAddr addr)
-    {
-      return GetTmAccum(addr.Ch, addr.Rtu, addr.Point);
-    }
+  public void WriteToStorage(string key, object value)
+  {
+    _storage[key] = value;
+  }
 
 
-    public float GetTmAccumLoad(int ch, int rtu, int point)
-    {
-      return _api.GetAccumLoad(ch, rtu, point).GetAwaiter().GetResult();
-    }
+  public object? ReadFromStorage(string key)
+  {
+    return _storage.TryGetValue(key, out var value) ? value : null;
+  }
 
 
-    public float GetTmAccumLoadOrDefault(int ch, int rtu, int point, float defaultValue)
-    {
-      var tmAccum = new TmAccum(ch, rtu, point);
-      _api.UpdateAccum(tmAccum).Wait();
-      return tmAccum.HasProblems ? defaultValue : tmAccum.Load;
-    }
-
-
-    public float GetTmAccumLoad(TmAddr addr)
-    {
-      return GetTmAccumLoad(addr.Ch, addr.Rtu, addr.Point);
-    }
-
-
-    public string GetTmAccumName(int ch, int rtu, int point)
-    {
-      var tmAccum = new TmAccum(ch, rtu, point);
-      _api.UpdateTagPropertiesAndClassData(tmAccum).Wait();
-      return tmAccum.Name;
-    }
-
-
-    public string GetTmAccumUnit(int ch, int rtu, int point)
-    {
-      var tmAccum = new TmAccum(ch, rtu, point);
-      _api.UpdateTagPropertiesAndClassData(tmAccum).Wait();
-      return tmAccum.Unit;
-    }
-
-
-    protected bool IsTmAccumFlagRaised(int ch, int rtu, int point, TmFlags flag)
-    {
-      var tmAccum = new TmAccum(ch, rtu, point);
-      _api.UpdateAccum(tmAccum).Wait();
-      return tmAccum.HasFlag(flag);
-    }
-
-
-    public float? GetTmAccumFromRetro(int ch, int rtu, int point, long timestamp)
-    {
-      var time        = DateUtil.GetDateTimeFromTimestamp(timestamp);
-      var analogRetro = _api.GetAccumFromRetro(ch, rtu, point, time).GetAwaiter().GetResult();
-
-      return !analogRetro.IsUnreliable ? analogRetro.Value : null;
-    }
-
-
-    public void SetTmStatus(int ch, int rtu, int point, int status)
-    {
-      _api.SetStatus(ch, rtu, point, status).Wait();
-    }
-
-
-    public void SetTmStatus(TmAddr addr, int status)
-    {
-      SetTmStatus(addr.Ch, addr.Rtu, addr.Point, status);
-    }
-
-
-    public void RaiseTmStatusFlag(int ch, int rtu, int point, TmFlags flags)
-    {
-      _api.SetTagFlagsExplicitly(new TmStatus(ch, rtu, point), flags);
-    }
-
-
-    public void RaiseTmStatusFlag(TmAddr addr, TmFlags flags)
-    {
-      RaiseTmStatusFlag(addr.Ch, addr.Rtu, addr.Point, flags);
-    }
-
-
-    public void ClearTmStatusFlag(int ch, int rtu, int point, TmFlags flags)
-    {
-      _api.ClearTagFlagsExplicitly(new TmStatus(ch, rtu, point), flags);
-    }
-
-
-    public void ClearTmStatusFlag(TmAddr addr, TmFlags flags)
-    {
-      ClearTmStatusFlag(addr.Ch, addr.Rtu, addr.Point, flags);
-    }
-
-
-    public void SetTmAnalog(int ch, int rtu, int point, float value)
-    {
-      _api.SetAnalog(ch, rtu, point, value).Wait();
-    }
-
-
-    public void SetTmAnalog(TmAddr addr, float value)
-    {
-      SetTmAnalog(addr.Ch, addr.Rtu, addr.Point, value);
-    }
-
-
-    public void RaiseTmAnalogFlag(int ch, int rtu, int point, TmFlags flags)
-    {
-      _api.SetTagFlagsExplicitly(new TmAnalog(ch, rtu, point), flags);
-    }
-
-
-    public void RaiseTmAnalogFlag(TmAddr addr, TmFlags flags)
-    {
-      RaiseTmAnalogFlag(addr.Ch, addr.Rtu, addr.Point, flags);
-    }
-
-
-    public void ClearTmAnalogFlag(int ch, int rtu, int point, TmFlags flags)
-    {
-      _api.ClearTagFlagsExplicitly(new TmAnalog(ch, rtu, point), flags);
-    }
-
-
-    public void ClearTmAnalogFlag(TmAddr addr, TmFlags flags)
-    {
-      ClearTmAnalogFlag(addr.Ch, addr.Rtu, addr.Point, flags);
-    }
-
-
-    public string GetExpressionResult(string expression)
-    {
-      return _api.GetExpressionResult(expression).GetAwaiter().GetResult();
-    }
-
-
-    public float GetExpressionResultFloat(string expression)
-    {
-      if (!TryGetExpressionResult(expression, out var value))
-      {
-        throw new Exception("Ошибка функции TM");
-      }
-      return value;
-    }
-
-
-    public bool TryGetExpressionResult(string expression, out float value)
-    {
-      var expressionResult = GetExpressionResult(expression);
-      if (!float.TryParse(expressionResult, NumberStyles.Any, CultureInfo.InvariantCulture, out value))
-      {
-        LogDebug(expressionResult);
-        return false;
-      }
-      return true;
-    }
-
-
-    public void WriteToStorage(string key, object value)
-    {
-      _storage[key] = value;
-    }
-
-
-    public object ReadFromStorage(string key)
-    {
-      return _storage.TryGetValue(key, out var value) ? value : null;
-    }
-
-
-    public void LogDebug(string message)
-    {
-      Tms.PrintDebug($"Отладочное сообщение скрипта \"{_name}\": {message}");
-    }
+  public void LogDebug(string message)
+  {
+    Tms.PrintDebug($"Отладочное сообщение скрипта \"{_name}\": {message}");
   }
 }
