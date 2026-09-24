@@ -10,49 +10,54 @@ namespace Iface.Oik.ScriptEngine;
 
 public static class Loader
 {
-  private static readonly string ScriptsPath = Path.Combine(AppContext.BaseDirectory, "scripts");
+    private static readonly string ScriptsPath = Path.Combine(AppContext.BaseDirectory, "scripts");
 
-
-  public static bool AddWorkers(this IServiceCollection services)
-  {
-    if (!Directory.Exists(ScriptsPath))
+    public static bool AddWorkers(this IServiceCollection services)
     {
-      Tms.PrintError("Не найден каталог с файлами скриптов");
-      return false;
+        if (!Directory.Exists(ScriptsPath))
+        {
+            Tms.PrintError("Не найден каталог с файлами скриптов");
+            return false;
+        }
+
+        var workersCount = 0;
+        foreach (var filename in Directory.GetFiles(ScriptsPath, "*"))
+        {
+            switch (Path.GetExtension(filename))
+            {
+                case ".js":
+                    services.AddSingleton<IHostedService>(provider => new JavascriptWorker(
+                        provider.GetRequiredService<IOikDataApi>(),
+                        filename
+                    ));
+                    workersCount++;
+                    break;
+
+                case ".py":
+                    services.AddSingleton<IHostedService>(provider => new PythonWorker(
+                        provider.GetRequiredService<IOikDataApi>(),
+                        filename
+                    ));
+                    workersCount++;
+                    break;
+
+                case ".xlsx":
+                    services.AddSingleton<IHostedService>(provider => new ExcelWorker(
+                        provider.GetRequiredService<IOikDataApi>(),
+                        filename
+                    ));
+                    workersCount++;
+                    break;
+            }
+        }
+
+        if (workersCount == 0)
+        {
+            Tms.PrintError("Не найдено ни одного скрипта");
+            return false;
+        }
+
+        Tms.PrintMessage($"Всего скриптов: {workersCount}");
+        return true;
     }
-
-    var workersCount = 0;
-    foreach (var filename in Directory.GetFiles(ScriptsPath, "*"))
-    {
-      switch (Path.GetExtension(filename))
-      {
-        case ".js":
-          services.AddSingleton<IHostedService>(provider => new JavascriptWorker(provider.GetRequiredService<IOikDataApi>(),
-                                                  filename));
-          workersCount++;
-          break;
-
-        case ".py":
-          services.AddSingleton<IHostedService>(provider => new PythonWorker(provider.GetRequiredService<IOikDataApi>(),
-                                                                             filename));
-          workersCount++;
-          break;
-
-        case ".xlsx":
-          services.AddSingleton<IHostedService>(provider => new ExcelWorker(provider.GetRequiredService<IOikDataApi>(),
-                                                                            filename));
-          workersCount++;
-          break;
-      }
-    }
-
-    if (workersCount == 0)
-    {
-      Tms.PrintError("Не найдено ни одного скрипта");
-      return false;
-    }
-
-    Tms.PrintMessage($"Всего скриптов: {workersCount}");
-    return true;
-  }
 }
