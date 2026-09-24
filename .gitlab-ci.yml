@@ -14,12 +14,24 @@ variables:
 
 workflow:
   rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      
+check:
+  stage: check
+  tags:
+    - windows
+  script:
+    - 'dotnet tool restore'
+    - 'dotnet csharpier check .'
+    - 'dotnet build'
 
 build:
   stage: build
   tags:
     - windows
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
   script:
     - 'dotnet publish -c Release -r win-x64 -p:CopyOutputSymbolsToPublishDirectory=false -p:PublishSingleFile=true --self-contained false -o ${BINARY_PATH_WINDOWS}'
     - 'dotnet publish -c Release -r linux-x64 -p:CopyOutputSymbolsToPublishDirectory=false -p:PublishSingleFile=true --self-contained false -o ${BINARY_PATH_LINUX}'
@@ -45,6 +57,8 @@ deploy:
     - windows
   variables:
     GIT_STRATEGY: none
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
   script:
     - '7z a -tzip ${DEPLOY_PATH}/${RELEASE_NAME_WINDOWS} ./${BINARY_PATH_WINDOWS}/*'
     - 'tar -cvzf ${DEPLOY_PATH}/${RELEASE_NAME_LINUX} -C ${BINARY_PATH_LINUX} .'
