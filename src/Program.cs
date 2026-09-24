@@ -9,38 +9,44 @@ namespace Iface.Oik.ScriptEngine;
 
 public class Program
 {
-  public static void Main(string[] args)
-  {
-    try
+    public static void Main(string[] args)
     {
-      TmStartup.Connect();
+        try
+        {
+            TmStartup.Connect();
+        }
+        catch (Exception ex)
+        {
+            Tms.PrintError(ex.Message);
+            Environment.Exit(-1);
+        }
+
+        Host.CreateDefaultBuilder(args)
+            .ConfigureServices(
+                (_, services) =>
+                {
+                    // регистрация сервисов ОИК
+                    services.AddSingleton<ITmsApi, TmsApi>();
+                    services.AddSingleton<IOikSqlApi, OikSqlApi>();
+                    services.AddSingleton<IOikDataApi, OikDataApi>();
+                    services.AddSingleton<ICommonInfrastructure, CommonInfrastructure>();
+                    services.AddSingleton<ServerService>();
+                    services.AddSingleton<ICommonServerService>(provider =>
+                        provider.GetRequiredService<ServerService>()
+                    );
+
+                    // регистрация фоновых служб
+                    services.AddHostedService<TmStartup>();
+                    services.AddSingleton<IHostedService>(provider =>
+                        provider.GetRequiredService<ServerService>()
+                    );
+                    if (!services.AddWorkers())
+                    {
+                        Environment.Exit(-1);
+                    }
+                }
+            )
+            .Build()
+            .Run();
     }
-    catch (Exception ex)
-    {
-      Tms.PrintError(ex.Message);
-      Environment.Exit(-1);
-    }
-      
-    Host.CreateDefaultBuilder(args)
-        .ConfigureServices((_, services) =>
-         {
-           // регистрация сервисов ОИК
-           services.AddSingleton<ITmsApi, TmsApi>();
-           services.AddSingleton<IOikSqlApi, OikSqlApi>();
-           services.AddSingleton<IOikDataApi, OikDataApi>();
-           services.AddSingleton<ICommonInfrastructure, CommonInfrastructure>();
-           services.AddSingleton<ServerService>();
-           services.AddSingleton<ICommonServerService>(provider => provider.GetRequiredService<ServerService>());
-            
-           // регистрация фоновых служб
-           services.AddHostedService<TmStartup>();
-           services.AddSingleton<IHostedService>(provider => provider.GetRequiredService<ServerService>());
-           if (!services.AddWorkers())
-           {
-             Environment.Exit(-1);
-           }
-         })
-        .Build()
-        .Run();
-  }
 }
