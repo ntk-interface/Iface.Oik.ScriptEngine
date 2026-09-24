@@ -1,3 +1,8 @@
+stages:
+  - check
+  - build
+  - deploy
+
 variables:
   MAJOR_VERSION: 25
   FULL_BUILD_VERSION: '${MAJOR_VERSION}.${CI_PIPELINE_IID}'
