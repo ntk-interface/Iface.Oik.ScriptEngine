@@ -144,6 +144,17 @@ public class PythonWorker : Worker
         _engineScope.SetVariable("TmFlagLevel3", TmFlags.LevelC);
         _engineScope.SetVariable("TmFlagLevel4", TmFlags.LevelD);
         _engineScope.SetVariable("TmFlagUnacked", TmFlags.Unacked);
+
+        // Прокидываем глобальные имена скрипта в builtins, чтобы их видели импортируемые модули
+        var builtins = _engine.ImportModule("builtins");
+        foreach (var name in _engineScope.GetVariableNames())
+        {
+            if (name.StartsWith("_", StringComparison.Ordinal)) // защита на будущее от служебных имён
+            {
+                continue;
+            }
+            builtins.SetVariable(name, _engineScope.GetVariable(name));
+        }
     }
 
     protected override void DoWork()
